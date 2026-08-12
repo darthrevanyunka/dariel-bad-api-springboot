@@ -3,11 +3,8 @@ package com.challenge.badapi.config;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.info.Info;
 import io.swagger.v3.oas.models.info.Contact;
-import io.swagger.v3.oas.models.servers.Server;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-
-import java.util.List;
 
 @Configuration
 public class SwaggerConfig {
@@ -51,10 +48,10 @@ public class SwaggerConfig {
                                 """)
                         .contact(new Contact()
                                 .name("Challenge Admin")
-                                .email("admin@challenge.com")))
-                .servers(List.of(
-                        new Server().url("http://localhost:8080").description("Local server")
-                ));
+                                .email("admin@challenge.com")));
+                // No explicit .servers(...): springdoc derives the server URL from the
+                // incoming request, so this works whether the API is reached via
+                // localhost or a remote CHALLENGE_URL.
     }
 }
 

@@ -79,6 +79,19 @@ mvn spring-boot:run
    - **API Docs**: http://localhost:8080/swagger-ui.html
    - **API Base**: http://localhost:8080/api
 
+### 🌐 Joining a Live Event
+
+You don't have to run anything yourself. There are two ways to participate:
+
+- **Run it locally** — follow the steps above; your base URL is `http://localhost:8080`.
+- **Use the event URL** — the organizer will give you a base URL on the day (e.g. `https://challenge.example.com`). Use that instead of `http://localhost:8080` everywhere in this doc and in your code.
+
+The reference solution snippets in this README, and any starter code the organizer shares, read this base URL from a `CHALLENGE_URL` environment variable (falling back to `http://localhost:8080` if unset):
+
+```bash
+export CHALLENGE_URL=https://challenge.example.com   # skip this if running locally
+```
+
 ## 📚 API Endpoints
 
 ### Data Endpoints

@@ -5,6 +5,7 @@ import com.challenge.badapi.service.LeaderboardService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -19,6 +20,9 @@ public class LeaderboardController {
 
     @Autowired
     private LeaderboardService leaderboardService;
+
+    @Value("${badapi.admin-key}")
+    private String adminKey;
 
     @GetMapping("/leaderboard")
     @Operation(
@@ -52,7 +56,7 @@ public class LeaderboardController {
             @RequestParam(required = false, defaultValue = "") String adminKey
     ) {
         // Simple admin key check (in production, use proper authentication)
-        if (!"reset123".equals(adminKey)) {
+        if (!this.adminKey.equals(adminKey)) {
             return ResponseEntity.status(403)
                     .body(Map.of("message", "Unauthorized - invalid admin key"));
         }

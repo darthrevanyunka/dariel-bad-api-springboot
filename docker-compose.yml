@@ -1,0 +1,42 @@
+services:
+  bad-api:
+    build: .
+    container_name: bad-api-challenge
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+    environment:
+      # REQUIRED for anything reachable outside localhost - do not ship the
+      # "reset123" default to the internet. Put your own value in a local
+      # .env file (see .env.example) rather than editing this file.
+      - BADAPI_ADMIN_KEY=${BADAPI_ADMIN_KEY:?set BADAPI_ADMIN_KEY in .env before starting}
+    deploy:
+      resources:
+        limits:
+          # Generously sized for ~20 concurrent participants against a
+          # stateless, all-in-memory app with a tiny (2,000-record) dataset.
+          # Actual steady-state usage is well under this - the headroom is
+          # here for the worst case where several people simultaneously hit
+          # the simulated 2-minute timeout, which briefly ties up a Tomcat
+          # worker thread each (still nowhere near the 200-thread pool cap).
+          cpus: "2.0"
+          memory: 1g
+    healthcheck:
+      test: ["CMD", "wget", "-q", "-O", "/dev/null", "http://localhost:8080/actuator/health"]
+      interval: 15s
+      timeout: 5s
+      start_period: 30s
+      retries: 3
+
+  # Optional: exposes bad-api publicly via a Cloudflare Tunnel - no inbound
+  # ports opened on this machine. Only starts with --profile tunnel.
+  # See HOSTING.md for the one-time Cloudflare setup.
+  cloudflared:
+    image: cloudflare/cloudflared:latest
+    container_name: bad-api-tunnel
+    restart: unless-stopped
+    command: tunnel --no-autoupdate run --token ${CLOUDFLARE_TUNNEL_TOKEN:?set CLOUDFLARE_TUNNEL_TOKEN in .env - see HOSTING.md}
+    depends_on:
+      bad-api:
+        condition: service_healthy
+    profiles: ["tunnel"]

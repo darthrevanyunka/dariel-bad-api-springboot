@@ -1,0 +1,23 @@
+# Reference solutions must never end up in the image
+solution/
+
+# VCS / IDE
+.git/
+.gitignore
+.gitattributes
+.idea/
+*.iml
+
+# Build output (rebuilt inside the image)
+target/
+
+# Docs not needed at runtime
+*.md
+last-mile.html
+training-presentation.html
+
+# Local-only clutter
+.DS_Store
+*.log
+app.log
+.remember/

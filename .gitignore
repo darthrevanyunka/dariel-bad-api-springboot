@@ -40,3 +40,7 @@ build/
 
 ### Reference solutions - organizer-only, never committed ###
 /solution/
+
+### Secrets ###
+.env
+cloudflared/

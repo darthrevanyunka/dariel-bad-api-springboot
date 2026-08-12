@@ -26,8 +26,8 @@ Show this slide/screen:
 ## Demo (5 minutes)
 
 ### Show the Web Interface
-1. Open http://localhost:8080
-2. Walk through the landing page
+1. Tell participants their challenge URL — `http://localhost:8080` if everyone's running it locally, or the URL you're hosting for the event (see CHALLENGE_SETUP.md's "Where will this run?")
+2. Open that URL and walk through the landing page
 3. Show the documentation page
 4. Show the Swagger UI
 
@@ -229,7 +229,7 @@ Before presentation:
 - [ ] Difficulty level is configured correctly
 - [ ] Projector/screen sharing works for leaderboard
 - [ ] Have Postman/curl ready for demo
-- [ ] Print or share URL: http://localhost:8080
+- [ ] Print or share the challenge URL (localhost or your event URL) — tell participants to set it as `CHALLENGE_URL` if they use any reference/starter code
 
 During presentation:
 - [ ] Leaderboard visible throughout

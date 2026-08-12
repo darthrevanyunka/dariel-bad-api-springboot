@@ -2,6 +2,12 @@
 
 This guide will help you configure and run the Bad API Challenge for your presentation.
 
+### Where will this run?
+
+This guide assumes you're running the server on your own machine, reachable at `http://localhost:8080`. If you're deploying it elsewhere for the event (a cloud host, a tunnel, etc.), substitute that URL for `http://localhost:8080` everywhere below — including the admin `curl` commands, since those need to reach wherever the server actually is. Whatever base URL you end up with is what you hand out to participants as `CHALLENGE_URL` (see README.md's "Joining a Live Event" section).
+
+For a concrete one-container-plus-Cloudflare-Tunnel setup (recommended for a live event), see [HOSTING.md](HOSTING.md).
+
 ## Quick Start
 
 1. **Start the API**:
@@ -81,7 +87,7 @@ badapi.chaos.max-rate-limit=50
    curl -X POST "http://localhost:8080/api/reset?adminKey=reset123"
    ```
 3. **Choose your difficulty level** and restart the API
-4. **Prepare handouts** - print or share the landing page URL
+4. **Prepare handouts** - print or share the landing page URL, and make sure participants know to set `CHALLENGE_URL` to it if they're using any starter/reference code
 
 ### During the Presentation
 
