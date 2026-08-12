@@ -1,0 +1,27 @@
+{
+  "name": "bad-api-challenge-solution",
+  "version": "1.0.0",
+  "description": "Reference solution for the Bad API Challenge",
+  "main": "solution.js",
+  "scripts": {
+    "start": "node solution.js",
+    "test": "node solution.js 'Test User'"
+  },
+  "keywords": [
+    "resilient-programming",
+    "retry-logic",
+    "rate-limiting",
+    "pagination"
+  ],
+  "author": "Bad API Challenge",
+  "license": "MIT",
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "dependencies": {},
+  "devDependencies": {},
+  "optionalDependencies": {
+    "node-fetch": "^2.7.0"
+  }
+}
+

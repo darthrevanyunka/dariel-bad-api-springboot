@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GTFO - Try Again</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="meme-page">
+        <h1>🚫 GTFO!</h1>
+        <p>Less than 10% correct? Really?!</p>
+        <p style="font-size: 1.5rem; margin-bottom: 2rem;">
+            Did you even try? Go back and do it properly!
+        </p>
+        
+        <div style="max-width: 600px; background: rgba(255,255,255,0.1); padding: 2rem; border-radius: 1rem; margin: 2rem 0;">
+            <h2 style="font-size: 2rem; margin-bottom: 1rem;">Pro Tips:</h2>
+            <ul style="text-align: left; font-size: 1.2rem; line-height: 2;">
+                <li>Actually call the API endpoints</li>
+                <li>Match the data correctly</li>
+                <li>Don't submit random garbage</li>
+                <li>Read the documentation</li>
+                <li>Compute the values properly</li>
+            </ul>
+        </div>
+
+        <div style="margin-top: 2rem;">
+            <a href="submit.html" class="btn btn-danger" style="font-size: 1.5rem; padding: 1rem 2rem;">
+                Try Again (Do Better This Time)
+            </a>
+            <a href="docs.html" class="btn btn-secondary" style="font-size: 1.5rem; padding: 1rem 2rem; margin-left: 1rem;">
+                Read the Docs
+            </a>
+        </div>
+
+        <p style="font-size: 1rem; margin-top: 3rem; opacity: 0.8;">
+            Hint: You need at least 10% correct to avoid this page 😅
+        </p>
+    </div>
+
+    <script>
+        // Add some fun animations
+        document.addEventListener('DOMContentLoaded', () => {
+            const h1 = document.querySelector('h1');
+            setInterval(() => {
+                h1.style.color = h1.style.color === 'yellow' ? 'white' : 'yellow';
+            }, 500);
+        });
+    </script>
+</body>
+</html>
+
