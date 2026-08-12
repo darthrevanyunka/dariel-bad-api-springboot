@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bad API Challenge - Submit Solution</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1>📤 Submit Your Solution</h1>
+            <p>Upload your CSV file or paste the content below</p>
+        </div>
+    </header>
+
+    <nav>
+        <ul>
+            <li><a href="index.html">Home</a></li>
+            <li><a href="docs.html">Documentation</a></li>
+            <li><a href="submit.html">Submit Solution</a></li>
+            <li><a href="leaderboard.html">Leaderboard</a></li>
+            <li><a href="/swagger-ui.html" target="_blank">API Reference</a></li>
+        </ul>
+    </nav>
+
+    <div class="container">
+        <div class="card">
+            <h2>Submit Your CSV</h2>
+            
+            <form id="submitForm">
+                <div class="form-group">
+                    <label for="participantName">Your Name / Identifier *</label>
+                    <input 
+                        type="text" 
+                        id="participantName" 
+                        name="participantName" 
+                        required 
+                        placeholder="Enter your name"
+                    >
+                </div>
+
+                <div class="form-group">
+                    <label>Choose Submission Method:</label>
+                    <div style="display: flex; gap: 1rem; margin-bottom: 1rem;">
+                        <button type="button" class="btn btn-secondary" onclick="showFileUpload()">
+                            Upload File
+                        </button>
+                        <button type="button" class="btn btn-secondary" onclick="showTextPaste()">
+                            Paste Content
+                        </button>
+                    </div>
+                </div>
+
+                <div id="fileUploadSection" style="display: none;">
+                    <div class="form-group">
+                        <label for="csvFile">CSV File *</label>
+                        <input 
+                            type="file" 
+                            id="csvFile" 
+                            name="csvFile" 
+                            accept=".csv,text/csv"
+                            style="padding: 0.5rem;"
+                        >
+                    </div>
+                </div>
+
+                <div id="textPasteSection" style="display: none;">
+                    <div class="form-group">
+                        <label for="csvContent">CSV Content *</label>
+                        <textarea 
+                            id="csvContent" 
+                            name="csvContent" 
+                            placeholder="firstName,surname,age,computedValue&#10;John,Smith,25,John25Smith&#10;..."
+                            rows="15"
+                        ></textarea>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn btn-primary" id="submitBtn">
+                    Submit for Validation
+                </button>
+            </form>
+        </div>
+
+        <div id="resultSection" style="display: none;">
+            <div class="card">
+                <h2>Submission Result</h2>
+                <div id="resultContent"></div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>Expected Format</h2>
+            <pre><code>firstName,surname,age,computedValue
+John,Smith,25,John25Smith
+Mary,Johnson,30,Mary30Johnson
+...</code></pre>
+            <p>Your CSV must contain exactly 2000 rows (plus header) with the computed value formula:
+                <code>firstName + age + surname</code>
+            </p>
+        </div>
+    </div>
+
+    <script>
+        let submissionMethod = null;
+
+        function showFileUpload() {
+            submissionMethod = 'file';
+            document.getElementById('fileUploadSection').style.display = 'block';
+            document.getElementById('textPasteSection').style.display = 'none';
+            document.getElementById('csvContent').required = false;
+            document.getElementById('csvFile').required = true;
+        }
+
+        function showTextPaste() {
+            submissionMethod = 'text';
+            document.getElementById('fileUploadSection').style.display = 'none';
+            document.getElementById('textPasteSection').style.display = 'block';
+            document.getElementById('csvContent').required = true;
+            document.getElementById('csvFile').required = false;
+        }
+
+        document.getElementById('submitForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            if (!submissionMethod) {
+                alert('Please choose a submission method (File Upload or Paste Content)');
+                return;
+            }
+
+            const participantName = document.getElementById('participantName').value;
+            const submitBtn = document.getElementById('submitBtn');
+            const resultSection = document.getElementById('resultSection');
+            const resultContent = document.getElementById('resultContent');
+
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<span class="loading"></span> Validating...';
+
+            try {
+                let response;
+
+                if (submissionMethod === 'file') {
+                    const fileInput = document.getElementById('csvFile');
+                    if (!fileInput.files.length) {
+                        throw new Error('Please select a file');
+                    }
+
+                    const formData = new FormData();
+                    formData.append('participantName', participantName);
+                    formData.append('file', fileInput.files[0]);
+
+                    response = await fetch('/api/submit/file', {
+                        method: 'POST',
+                        body: formData
+                    });
+                } else {
+                    const csvContent = document.getElementById('csvContent').value;
+                    if (!csvContent.trim()) {
+                        throw new Error('Please paste your CSV content');
+                    }
+
+                    const formData = new FormData();
+                    formData.append('participantName', participantName);
+                    formData.append('csvContent', csvContent);
+
+                    response = await fetch('/api/submit', {
+                        method: 'POST',
+                        body: formData
+                    });
+                }
+
+                const result = await response.json();
+                displayResult(result);
+                resultSection.style.display = 'block';
+                resultSection.scrollIntoView({ behavior: 'smooth' });
+
+                // Check if should redirect to meme page
+                if (result.redirectToMeme) {
+                    setTimeout(() => {
+                        window.location.href = 'gtfo.html';
+                    }, 2000);
+                }
+
+            } catch (error) {
+                resultContent.innerHTML = `
+                    <div class="alert alert-error">
+                        <strong>Error:</strong> ${error.message}
+                    </div>
+                `;
+                resultSection.style.display = 'block';
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Submit for Validation';
+            }
+        });
+
+        function displayResult(result) {
+            const resultContent = document.getElementById('resultContent');
+            const submission = result.submission;
+            const successRate = (result.successRate * 100).toFixed(1);
+
+            if (result.success) {
+                resultContent.innerHTML = `
+                    <div class="alert alert-success">
+                        <h3>🎉 Congratulations!</h3>
+                        <p>${result.message}</p>
+                    </div>
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-value">${submission.correctRecords}</div>
+                            <div class="stat-label">Correct Records</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value">${successRate}%</div>
+                            <div class="stat-label">Success Rate</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value">${new Date(submission.submittedAt).toLocaleTimeString()}</div>
+                            <div class="stat-label">Submitted At</div>
+                        </div>
+                    </div>
+                    <p style="margin-top: 1rem;">
+                        <a href="leaderboard.html" class="btn btn-primary">View Leaderboard</a>
+                    </p>
+                `;
+            } else {
+                const alertClass = result.redirectToMeme ? 'alert-error' : 'alert-warning';
+                resultContent.innerHTML = `
+                    <div class="alert ${alertClass}">
+                        <h3>${result.redirectToMeme ? '🚫 GTFO!' : '❌ Validation Failed'}</h3>
+                        <p>${result.message}</p>
+                    </div>
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-value">${submission.correctRecords}</div>
+                            <div class="stat-label">Correct Records</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value">${submission.totalRecords}</div>
+                            <div class="stat-label">Total Records</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value">${successRate}%</div>
+                            <div class="stat-label">Success Rate</div>
+                        </div>
+                    </div>
+                    ${result.redirectToMeme ? '<p style="margin-top: 1rem;"><strong>Redirecting to meme page in 2 seconds...</strong></p>' : ''}
+                `;
+            }
+        }
+
+        // Show text paste by default
+        showTextPaste();
+    </script>
+</body>
+</html>
+

@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bad API Challenge - Leaderboard</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1>🏆 Leaderboard</h1>
+            <p>See who conquered the Bad API</p>
+        </div>
+    </header>
+
+    <nav>
+        <ul>
+            <li><a href="index.html">Home</a></li>
+            <li><a href="docs.html">Documentation</a></li>
+            <li><a href="submit.html">Submit Solution</a></li>
+            <li><a href="leaderboard.html">Leaderboard</a></li>
+            <li><a href="/swagger-ui.html" target="_blank">API Reference</a></li>
+        </ul>
+    </nav>
+
+    <div class="container">
+        <div class="card">
+            <h2>Challenge Statistics</h2>
+            <div class="stats-grid" id="statsGrid">
+                <div class="stat-card">
+                    <div class="stat-value" id="totalSubmissions">-</div>
+                    <div class="stat-label">Total Submissions</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="correctSubmissions">-</div>
+                    <div class="stat-label">Successful</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="uniqueParticipants">-</div>
+                    <div class="stat-label">Participants</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                <h2>Winners</h2>
+                <button class="btn btn-secondary" onclick="refreshLeaderboard()">
+                    🔄 Refresh
+                </button>
+            </div>
+
+            <div id="leaderboardContent">
+                <p style="text-align: center; color: var(--text-light);">
+                    <span class="loading"></span> Loading leaderboard...
+                </p>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>How to Win</h2>
+            <p>
+                The <strong>first person</strong> to submit a CSV file with all 2000 records correctly filled out wins!
+                Your submission time is recorded when you successfully complete the challenge.
+            </p>
+            <p style="margin-top: 1rem;">
+                Haven't submitted yet? 
+                <a href="submit.html" class="btn btn-primary">Submit Your Solution</a>
+            </p>
+        </div>
+    </div>
+
+    <script>
+        async function loadStats() {
+            try {
+                const response = await fetch('/api/stats');
+                const stats = await response.json();
+
+                document.getElementById('totalSubmissions').textContent = stats.totalSubmissions;
+                document.getElementById('correctSubmissions').textContent = stats.correctSubmissions;
+                document.getElementById('uniqueParticipants').textContent = stats.uniqueParticipants;
+            } catch (error) {
+                console.error('Error loading stats:', error);
+            }
+        }
+
+        async function loadLeaderboard() {
+            const content = document.getElementById('leaderboardContent');
+
+            try {
+                const response = await fetch('/api/leaderboard');
+                const winners = await response.json();
+
+                if (winners.length === 0) {
+                    content.innerHTML = `
+                        <div class="alert alert-info">
+                            <p>No winners yet! Be the first to complete the challenge!</p>
+                        </div>
+                    `;
+                    return;
+                }
+
+                let html = '<table><thead><tr>';
+                html += '<th>Rank</th>';
+                html += '<th>Participant</th>';
+                html += '<th>Submitted At</th>';
+                html += '<th>Records</th>';
+                html += '</tr></thead><tbody>';
+
+                winners.forEach((winner, index) => {
+                    const rank = index + 1;
+                    let badge = '';
+                    
+                    if (rank === 1) {
+                        badge = '<span class="badge badge-gold">🥇 1st</span>';
+                    } else if (rank === 2) {
+                        badge = '<span class="badge badge-silver">🥈 2nd</span>';
+                    } else if (rank === 3) {
+                        badge = '<span class="badge badge-bronze">🥉 3rd</span>';
+                    } else {
+                        badge = `<span class="badge badge-success">#${rank}</span>`;
+                    }
+
+                    const submittedAt = new Date(winner.submittedAt);
+                    const formattedDate = submittedAt.toLocaleDateString();
+                    const formattedTime = submittedAt.toLocaleTimeString();
+
+                    html += `<tr>
+                        <td>${badge}</td>
+                        <td><strong>${escapeHtml(winner.participantName)}</strong></td>
+                        <td>${formattedDate} ${formattedTime}</td>
+                        <td>${winner.correctRecords}/${winner.totalRecords}</td>
+                    </tr>`;
+                });
+
+                html += '</tbody></table>';
+                content.innerHTML = html;
+
+            } catch (error) {
+                content.innerHTML = `
+                    <div class="alert alert-error">
+                        <strong>Error loading leaderboard:</strong> ${error.message}
+                    </div>
+                `;
+            }
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        async function refreshLeaderboard() {
+            await Promise.all([loadStats(), loadLeaderboard()]);
+        }
+
+        // Load on page load
+        refreshLeaderboard();
+
+        // Auto-refresh every 10 seconds
+        setInterval(refreshLeaderboard, 10000);
+    </script>
+</body>
+</html>
+

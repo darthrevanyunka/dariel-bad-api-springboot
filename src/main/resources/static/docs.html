@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bad API Challenge - Documentation</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1>📚 API Documentation</h1>
+            <p>Everything you need to know to complete the challenge</p>
+        </div>
+    </header>
+
+    <nav>
+        <ul>
+            <li><a href="index.html">Home</a></li>
+            <li><a href="docs.html">Documentation</a></li>
+            <li><a href="submit.html">Submit Solution</a></li>
+            <li><a href="leaderboard.html">Leaderboard</a></li>
+            <li><a href="/swagger-ui.html" target="_blank">API Reference</a></li>
+        </ul>
+    </nav>
+
+    <div class="container">
+        <div class="card">
+            <h2>Export Documentation</h2>
+            <div class="export-buttons">
+                <button class="btn btn-primary" onclick="exportAsMarkdown()">Export as Markdown</button>
+                <button class="btn btn-secondary" onclick="printDocs()">Print / Save as PDF</button>
+            </div>
+        </div>
+
+        <div id="exportContent">
+            <div class="card">
+                <h2>Base URL</h2>
+                <pre><code id="apiBaseUrl">http://localhost:8080/api</code></pre>
+            </div>
+
+            <div class="card">
+                <h2>Data Endpoints</h2>
+                
+                <div class="endpoint-card">
+                    <h3>
+                        <span class="method get">GET</span>
+                        /api/people/firstnames
+                    </h3>
+                    <p><strong>Description:</strong> Returns a list of all person IDs with their first names.</p>
+                    
+                    <h4>Response Example:</h4>
+                    <pre><code>{
+  "data": [
+    {"id": 1, "firstName": "John"},
+    {"id": 2, "firstName": "Mary"},
+    ...
+  ],
+  "total": 2000
+}</code></pre>
+
+                    <div class="alert alert-error">
+                        <strong>⚠️ Potential Issues:</strong> This endpoint may return random HTTP errors (500, 503, 504). 
+                        Implement retry logic with exponential backoff.
+                    </div>
+                </div>
+
+                <div class="endpoint-card">
+                    <h3>
+                        <span class="method get">GET</span>
+                        /api/people/surnames
+                    </h3>
+                    <p><strong>Description:</strong> Returns a list of all person IDs with their surnames.</p>
+                    
+                    <h4>Response Example:</h4>
+                    <pre><code>{
+  "data": [
+    {"id": 1, "surname": "Smith"},
+    {"id": 2, "surname": "Johnson"},
+    ...
+  ],
+  "total": 2000
+}</code></pre>
+
+                    <div class="alert alert-warning">
+                        <strong>⚠️ Potential Issues:</strong> This endpoint has rate limiting. 
+                        You may receive 429 (Too Many Requests) responses with a Retry-After header.
+                        Respect the rate limits and implement proper throttling.
+                    </div>
+                </div>
+
+                <div class="endpoint-card">
+                    <h3>
+                        <span class="method get">GET</span>
+                        /api/people/ages?cursor={cursor}
+                    </h3>
+                    <p><strong>Description:</strong> Returns a paginated list of person IDs with their ages.</p>
+                    
+                    <h4>Query Parameters:</h4>
+                    <ul>
+                        <li><code>cursor</code> (optional): Pagination cursor. Start with no cursor or cursor=0</li>
+                    </ul>
+                    
+                    <h4>Response Example:</h4>
+                    <pre><code>{
+  "data": [
+    {"id": 1, "age": 25},
+    {"id": 2, "age": 30},
+    ...
+  ],
+  "cursor": "50",
+  "hasMore": true,
+  "total": 2000
+}</code></pre>
+
+                    <div class="alert alert-info">
+                        <strong>⚠️ Potential Issues:</strong> This endpoint requires cursor-based pagination. 
+                        Use the returned cursor value to fetch the next page. Continue until hasMore is false.
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2>Submission Endpoints</h2>
+                
+                <div class="endpoint-card">
+                    <h3>
+                        <span class="method post">POST</span>
+                        /api/submit
+                    </h3>
+                    <p><strong>Description:</strong> Submit your CSV solution for validation.</p>
+                    
+                    <h4>Request Body (form-data):</h4>
+                    <ul>
+                        <li><code>participantName</code> (string, required): Your name or identifier</li>
+                        <li><code>csvContent</code> (string, required): Your complete CSV content</li>
+                    </ul>
+                    
+                    <h4>Response Example (Success):</h4>
+                    <pre><code>{
+  "success": true,
+  "message": "Perfect! All 2000 records are correct!",
+  "submission": {
+    "participantName": "John Doe",
+    "submittedAt": "2025-11-03T10:30:00",
+    "isCorrect": true,
+    "totalRecords": 2000,
+    "correctRecords": 2000
+  },
+  "successRate": 1.0,
+  "redirectToMeme": false
+}</code></pre>
+
+                    <h4>Response Example (Failure):</h4>
+                    <pre><code>{
+  "success": false,
+  "message": "Validation failed. 1700 out of 2000 records are correct...",
+  "submission": {...},
+  "successRate": 0.85,
+  "redirectToMeme": false
+}</code></pre>
+
+                    <div class="alert alert-error">
+                        <strong>🚨 Less than 10% correct?</strong> If your success rate is below 10%, 
+                        you'll be redirected to a special page. Try again!
+                    </div>
+                </div>
+
+                <div class="endpoint-card">
+                    <h3>
+                        <span class="method post">POST</span>
+                        /api/submit/file
+                    </h3>
+                    <p><strong>Description:</strong> Submit your CSV file via file upload.</p>
+                    
+                    <h4>Request Body (multipart/form-data):</h4>
+                    <ul>
+                        <li><code>participantName</code> (string, required): Your name or identifier</li>
+                        <li><code>file</code> (file, required): Your CSV file</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2>Leaderboard Endpoints</h2>
+                
+                <div class="endpoint-card">
+                    <h3>
+                        <span class="method get">GET</span>
+                        /api/leaderboard
+                    </h3>
+                    <p><strong>Description:</strong> Get all successful submissions sorted by time.</p>
+                    
+                    <h4>Response Example:</h4>
+                    <pre><code>[
+  {
+    "participantName": "Alice",
+    "submittedAt": "2025-11-03T10:30:00",
+    "isCorrect": true,
+    "totalRecords": 2000,
+    "correctRecords": 2000
+  },
+  ...
+]</code></pre>
+                </div>
+
+                <div class="endpoint-card">
+                    <h3>
+                        <span class="method get">GET</span>
+                        /api/stats
+                    </h3>
+                    <p><strong>Description:</strong> Get challenge statistics.</p>
+                    
+                    <h4>Response Example:</h4>
+                    <pre><code>{
+  "totalSubmissions": 25,
+  "correctSubmissions": 5,
+  "uniqueParticipants": 15
+}</code></pre>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2>Expected CSV Format</h2>
+                <p>Your CSV file must have exactly 2000 rows (plus header) with this format:</p>
+                <pre><code>firstName,surname,age,computedValue
+John,Smith,25,John25Smith
+Mary,Johnson,30,Mary30Johnson
+...</code></pre>
+
+                <h3>Validation Rules</h3>
+                <ul style="margin-left: 2rem;">
+                    <li>Header row must include: firstName, surname, age, computedValue</li>
+                    <li>Exactly 2000 data rows required</li>
+                    <li>All person data must match the API data exactly</li>
+                    <li>Computed value must be: firstName + age + surname (concatenated as string)</li>
+                    <li>No duplicate people</li>
+                    <li>All 2000 people from the API must be included</li>
+                </ul>
+            </div>
+
+            <div class="card">
+                <h2>Error Handling Best Practices</h2>
+                
+                <div class="doc-section">
+                    <h3>1. Retry Logic with Exponential Backoff</h3>
+                    <pre><code>async function fetchWithRetry(url, maxRetries = 5) {
+  for (let i = 0; i < maxRetries; i++) {
+    try {
+      const response = await fetch(url);
+      if (response.ok) return response;
+      if (response.status >= 500) {
+        await sleep(Math.pow(2, i) * 1000);
+        continue;
+      }
+      throw new Error(\`HTTP \${response.status}\`);
+    } catch (error) {
+      if (i === maxRetries - 1) throw error;
+      await sleep(Math.pow(2, i) * 1000);
+    }
+  }
+}</code></pre>
+                </div>
+
+                <div class="doc-section">
+                    <h3>2. Rate Limit Handling</h3>
+                    <pre><code>if (response.status === 429) {
+  const retryAfter = response.headers.get('Retry-After');
+  await sleep((parseInt(retryAfter) || 60) * 1000);
+  // Retry the request
+}</code></pre>
+                </div>
+
+                <div class="doc-section">
+                    <h3>3. Pagination Loop</h3>
+                    <pre><code>let cursor = null;
+let allData = [];
+do {
+  const url = cursor 
+    ? \`/api/people/ages?cursor=\${cursor}\`
+    : '/api/people/ages';
+  const response = await fetch(url);
+  const data = await response.json();
+  allData.push(...data.data);
+  cursor = data.cursor;
+} while (cursor !== null);</code></pre>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Update base URL
+        const baseUrl = window.location.origin + '/api';
+        document.getElementById('apiBaseUrl').textContent = baseUrl;
+
+        function exportAsMarkdown() {
+            const content = generateMarkdown();
+            const blob = new Blob([content], { type: 'text/markdown' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'bad-api-documentation.md';
+            a.click();
+        }
+
+        function generateMarkdown() {
+            return `# Bad API Challenge - Documentation
+
+## Base URL
+\`\`\`
+${window.location.origin}/api
+\`\`\`
+
+## Data Endpoints
+
+### GET /api/people/firstnames
+Returns a list of all person IDs with their first names.
+
+**⚠️ Warning:** May return random HTTP errors (500, 503, 504)
+
+### GET /api/people/surnames
+Returns a list of all person IDs with their surnames.
+
+**⚠️ Warning:** Has rate limiting - may return 429 responses
+
+### GET /api/people/ages?cursor={cursor}
+Returns a paginated list of person IDs with their ages.
+
+**⚠️ Warning:** Requires cursor-based pagination
+
+## Submission Endpoints
+
+### POST /api/submit
+Submit your CSV solution for validation.
+
+**Request Parameters:**
+- participantName (string, required)
+- csvContent (string, required)
+
+### POST /api/submit/file
+Submit your CSV file via file upload.
+
+## Expected CSV Format
+\`\`\`
+firstName,surname,age,computedValue
+John,Smith,25,John25Smith
+Mary,Johnson,30,Mary30Johnson
+...
+\`\`\`
+
+## Validation Rules
+- Exactly 2000 data rows required
+- Computed value: firstName + age + surname
+- All data must match API data exactly
+- No duplicates
+
+For full API reference, visit: ${window.location.origin}/swagger-ui.html
+`;
+        }
+
+        function printDocs() {
+            window.print();
+        }
+    </script>
+</body>
+</html>
+

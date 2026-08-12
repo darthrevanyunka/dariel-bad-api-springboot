@@ -1,0 +1,1494 @@
+<!DOCTYPE html>
+<!--
+  ╔══════════════════════════════════════════════════════════════╗
+  ║  BAD API CHALLENGE  ·  PRE-FLIGHT BRIEFING                    ║
+  ║  Built on the last-mile.html slide-deck template              ║
+  ╚══════════════════════════════════════════════════════════════╝
+-->
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pre-Flight Briefing — Bad API Challenge</title>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0%25' stop-color='%232485e8'/%3E%3Cstop offset='100%25' stop-color='%235bc3f5'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='32' height='32' rx='7' fill='%230d1421'/%3E%3Cpath d='M9 7h6.5C21.4 7 25 11.5 25 16s-3.6 9-9.5 9H9V7z' fill='none' stroke='url(%23g)' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css" integrity="sha384-oaMLBGEzBOJx3UHwac0cVndtX5fxGQIfnAeFZ35RTgqPcYlbprH9o9PUV/F8Le07" crossorigin="anonymous">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --green:      #2485e8;
+      --green-glow: rgba(36,133,232,0.12);
+      --dark:       #0d1421;
+      --surface:    #162035;
+      --surface2:   #1e2d45;
+      --border:     rgba(255,255,255,0.07);
+      --text:       #dde8f5;
+      --muted:      #7a8fa8;
+      --orange:     #e07e2c;
+      --blue:       #5bc3f5;
+      --purple:     #a855f7;
+      --teal:       #14b8a6;
+      --rose:       #f43f5e;
+      --zoom:       1.75;
+    }
+
+    html, body {
+      width: 100vw; height: 100vh;
+      overflow: hidden;
+      background: var(--dark);
+      font-family: 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif;
+      color: var(--text);
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    #deck {
+      position: relative;
+      width: calc(100vw / var(--zoom));
+      height: calc(100vh / var(--zoom));
+      transform: scale(var(--zoom));
+      transform-origin: top left;
+      overflow: hidden;
+    }
+
+    .slide {
+      display: none;
+      position: absolute;
+      inset: 0;
+      padding: 32px 48px 40px;
+      flex-direction: column;
+      justify-content: center;
+      background: var(--dark);
+      contain: layout style;
+    }
+    .slide::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background:
+        linear-gradient(180deg, rgba(36,133,232,0.04) 0%, transparent 2px, transparent 100%),
+        radial-gradient(ellipse at 50% -20%, rgba(36,133,232,0.035) 0%, transparent 55%),
+        radial-gradient(ellipse at 50% 120%, rgba(0,0,0,0.25) 0%, transparent 55%);
+      pointer-events: none;
+      z-index: 0;
+    }
+    .slide > * { position: relative; z-index: 1; }
+    .slide.active { display: flex; }
+    .slide.center  { align-items: center; text-align: center; }
+
+    h1 {
+      font-size: clamp(1.4rem, 3.2vw, 2.2rem);
+      font-weight: 800;
+      line-height: 1.1;
+      letter-spacing: -0.02em;
+    }
+    h2 {
+      font-size: clamp(0.9rem, 1.8vw, 1.2rem);
+      font-weight: 700;
+      color: var(--green);
+      letter-spacing: -0.01em;
+      margin-bottom: 0.6em;
+      padding-bottom: 0.4em;
+      border-bottom: 2px solid transparent;
+      border-image: linear-gradient(90deg, var(--green) 0%, var(--blue) 40%, transparent 70%) 1;
+    }
+    h3 {
+      font-size: clamp(0.55rem, 1.1vw, 0.68rem);
+      font-weight: 600;
+      color: #7ab8e8;
+      margin-bottom: 0.4em;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+    p  { font-size: clamp(0.58rem, 1.1vw, 0.68rem); line-height: 1.65; }
+
+    .subtitle { font-size: clamp(0.65rem, 1.3vw, 0.82rem); color: var(--muted); margin-top: 0.4em; font-weight: 400; }
+    .section-label { font-size: 0.52em; text-transform: uppercase; letter-spacing: 0.22em; color: var(--muted); margin-bottom: 0.5em; font-weight: 600; }
+
+    ul, ol { padding-left: 1.3em; }
+    li { font-size: clamp(0.55rem, 1.05vw, 0.65rem); line-height: 1.6; margin-bottom: 0.25em; }
+    li strong { color: var(--green); }
+
+    .g2  { display: grid; grid-template-columns: 1fr 1fr;   gap: 14px; align-items: start; }
+    .g3  { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; align-items: start; }
+    .g60 { display: grid; grid-template-columns: 3fr 2fr;   gap: 14px; align-items: start; }
+
+    .card {
+      background: linear-gradient(170deg, rgba(22,32,53,0.55) 0%, rgba(22,32,53,0.35) 100%);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-top: 2px solid rgba(36,133,232,0.25);
+      border-radius: 10px;
+      padding: 12px 14px;
+      backdrop-filter: blur(16px) saturate(1.4);
+      -webkit-backdrop-filter: blur(16px) saturate(1.4);
+      box-shadow: 0 4px 24px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.04);
+    }
+    .card.green  { border-color: rgba(36,133,232,0.25); border-top-color: rgba(36,133,232,0.5); background: linear-gradient(170deg, rgba(36,133,232,0.12) 0%, rgba(36,133,232,0.04) 100%); }
+    .card.orange { border-color: rgba(224,126,44,0.25); border-top-color: rgba(224,126,44,0.5); background: linear-gradient(170deg, rgba(224,126,44,0.12) 0%, rgba(224,126,44,0.04) 100%); }
+    .card.purple { border-color: rgba(168,85,247,0.25); border-top-color: rgba(168,85,247,0.5); background: linear-gradient(170deg, rgba(168,85,247,0.12) 0%, rgba(168,85,247,0.04) 100%); }
+    .card.teal   { border-color: rgba(20,184,166,0.25); border-top-color: rgba(20,184,166,0.5); background: linear-gradient(170deg, rgba(20,184,166,0.12) 0%, rgba(20,184,166,0.04) 100%); }
+    .card.rose   { border-color: rgba(244,63,94,0.25); border-top-color: rgba(244,63,94,0.5); background: linear-gradient(170deg, rgba(244,63,94,0.12) 0%, rgba(244,63,94,0.04) 100%); }
+
+    .callout {
+      border-left: 3px solid var(--green);
+      background: linear-gradient(135deg, rgba(36,133,232,0.1) 0%, rgba(36,133,232,0.03) 100%);
+      border-radius: 0 8px 8px 0;
+      padding: 8px 14px;
+      margin-top: 10px;
+      font-size: clamp(0.52rem, 1vw, 0.62rem);
+      line-height: 1.6;
+      backdrop-filter: blur(12px) saturate(1.3);
+      -webkit-backdrop-filter: blur(12px) saturate(1.3);
+      box-shadow: 0 2px 12px rgba(0,0,0,0.1), inset 0 1px 0 rgba(255,255,255,0.03);
+    }
+    .callout.orange { border-color: var(--orange); background: linear-gradient(135deg, rgba(224,126,44,0.1) 0%, rgba(224,126,44,0.03) 100%); }
+    .callout.purple { border-color: var(--purple); background: linear-gradient(135deg, rgba(168,85,247,0.1) 0%, rgba(168,85,247,0.03) 100%); }
+    .callout.teal   { border-color: var(--teal);   background: linear-gradient(135deg, rgba(20,184,166,0.1) 0%, rgba(20,184,166,0.03) 100%); }
+    .callout.rose   { border-color: var(--rose);    background: linear-gradient(135deg, rgba(244,63,94,0.1) 0%, rgba(244,63,94,0.03) 100%); }
+
+    .flow {
+      display: flex;
+      align-items: stretch;
+      justify-content: center;
+      gap: 0;
+      margin: 10px 0;
+    }
+    .fbox {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid rgba(36,133,232,0.25);
+      border-top: 2px solid rgba(36,133,232,0.4);
+      border-radius: 10px;
+      padding: 7px 12px;
+      background: linear-gradient(170deg, rgba(22,32,53,0.5) 0%, rgba(22,32,53,0.3) 100%);
+      min-width: 80px;
+      text-align: center;
+      backdrop-filter: blur(14px) saturate(1.3);
+      -webkit-backdrop-filter: blur(14px) saturate(1.3);
+      box-shadow: 0 2px 16px rgba(0,0,0,0.12), inset 0 1px 0 rgba(255,255,255,0.04);
+    }
+    .fbox small { font-size: 0.52em; color: var(--muted); text-transform: uppercase; letter-spacing: 0.08em; }
+    .fbox strong { font-size: 0.72em; margin-top: 2px; }
+    .fbox.dim  { border-color: rgba(122,143,168,0.3); border-top-color: rgba(122,143,168,0.4); }
+    .fbox.blue   { border-color: rgba(91,195,245,0.25); border-top-color: rgba(91,195,245,0.5); background: linear-gradient(170deg, rgba(91,195,245,0.1) 0%, rgba(91,195,245,0.03) 100%); }
+    .fbox.orange { border-color: rgba(224,126,44,0.25); border-top-color: rgba(224,126,44,0.5); background: linear-gradient(170deg, rgba(224,126,44,0.1) 0%, rgba(224,126,44,0.03) 100%); }
+    .fbox.purple { border-color: rgba(168,85,247,0.25); border-top-color: rgba(168,85,247,0.5); background: linear-gradient(170deg, rgba(168,85,247,0.1) 0%, rgba(168,85,247,0.03) 100%); }
+    .fbox.teal   { border-color: rgba(20,184,166,0.25); border-top-color: rgba(20,184,166,0.5); background: linear-gradient(170deg, rgba(20,184,166,0.1) 0%, rgba(20,184,166,0.03) 100%); }
+    .fbox.rose   { border-color: rgba(244,63,94,0.25); border-top-color: rgba(244,63,94,0.5); background: linear-gradient(170deg, rgba(244,63,94,0.1) 0%, rgba(244,63,94,0.03) 100%); }
+    .farrow { display: flex; align-items: center; padding: 0 5px; font-size: 1.1em; color: var(--green); opacity: 0.6; }
+
+    .flow > * {
+      opacity: 0;
+      transform: translateY(14px) scale(0.92);
+      filter: blur(4px);
+      pointer-events: none;
+    }
+    @keyframes flowReveal {
+      from { opacity: 0;   transform: translateY(14px) scale(0.92); filter: blur(4px); }
+      to   { opacity: 1;   transform: translateY(0)    scale(1);    filter: blur(0); }
+    }
+    .slide.active .flow > * {
+      pointer-events: auto;
+      animation: flowReveal 0.65s cubic-bezier(0.16, 1, 0.3, 1) both;
+    }
+    .slide.active .flow > *:nth-child(1) { animation-delay: 0.10s; }
+    .slide.active .flow > *:nth-child(2) { animation-delay: 0.20s; }
+    .slide.active .flow > *:nth-child(3) { animation-delay: 0.30s; }
+    .slide.active .flow > *:nth-child(4) { animation-delay: 0.40s; }
+    .slide.active .flow > *:nth-child(5) { animation-delay: 0.50s; }
+    .slide.active .flow > *:nth-child(6) { animation-delay: 0.60s; }
+    .slide.active .flow > *:nth-child(7) { animation-delay: 0.70s; }
+    .slide.active .flow > *:nth-child(8) { animation-delay: 0.80s; }
+    .slide.active .flow > *:nth-child(9) { animation-delay: 0.90s; }
+
+    pre {
+      border-radius: 8px;
+      overflow-x: auto;
+      overflow-y: hidden;
+      font-size: clamp(0.5rem, 0.9vw, 0.6rem);
+      line-height: 1.5;
+    }
+    pre code {
+      font-family: 'JetBrains Mono', 'Cascadia Code', 'Fira Code', Consolas, monospace !important;
+      padding: 10px 12px !important;
+    }
+
+    table { width: 100%; border-collapse: collapse; font-size: clamp(0.52rem, 1vw, 0.62rem); border-radius: 8px; overflow: hidden; border: 1px solid rgba(255,255,255,0.06); }
+    th { background: linear-gradient(135deg, rgba(36,133,232,0.12), rgba(36,133,232,0.04)); color: var(--green); text-align: left; padding: 7px 12px; border-bottom: 1px solid rgba(36,133,232,0.2); font-weight: 700; letter-spacing: 0.02em; text-transform: uppercase; font-size: 0.9em; backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); }
+    td { padding: 6px 12px; border-bottom: 1px solid rgba(255,255,255,0.04); vertical-align: top; }
+    tr:nth-child(even) td { background: rgba(255,255,255,0.015); }
+    tr:last-child td { border-bottom: none; }
+    td code, th code { background: var(--surface2); padding: 1px 4px; border-radius: 3px; font-family: monospace; }
+
+    .stats { display: flex; gap: 14px; justify-content: center; margin: 10px 0; flex-wrap: wrap; }
+    .stat {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 14px 16px 12px;
+      background: linear-gradient(145deg, rgba(22,32,53,0.5), rgba(30,45,69,0.35));
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 14px;
+      min-width: 110px;
+      position: relative;
+      overflow: hidden;
+      transition: transform 0.25s ease, border-color 0.25s ease;
+      backdrop-filter: blur(16px) saturate(1.4);
+      -webkit-backdrop-filter: blur(16px) saturate(1.4);
+      box-shadow: 0 4px 24px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.04);
+    }
+    .stat::before {
+      content: '';
+      position: absolute;
+      inset: -1px;
+      border-radius: 14px;
+      padding: 1px;
+      background: linear-gradient(135deg, rgba(36,133,232,0.4), transparent 60%);
+      -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+      -webkit-mask-composite: xor;
+      mask-composite: exclude;
+      pointer-events: none;
+    }
+    .stat::after {
+      content: '';
+      position: absolute;
+      top: -50%; left: -50%;
+      width: 200%; height: 200%;
+      background: radial-gradient(circle at 30% 30%, rgba(36,133,232,0.06), transparent 60%);
+      pointer-events: none;
+    }
+    .stat:hover { transform: translateY(-2px); border-color: rgba(36,133,232,0.4); }
+    .stat .ring-wrap {
+      position: relative;
+      width: 56px; height: 56px;
+      margin: 0 auto 6px;
+    }
+    .stat .ring-wrap svg {
+      width: 56px; height: 56px;
+      transform: rotate(-90deg);
+    }
+    .stat .ring-wrap .ring-bg {
+      fill: none;
+      stroke: rgba(36,133,232,0.12);
+      stroke-width: 3;
+    }
+    .stat .ring-wrap .ring-fg {
+      fill: none;
+      stroke: url(#ring-grad);
+      stroke-width: 3;
+      stroke-linecap: round;
+      stroke-dasharray: 150.8;
+      stroke-dashoffset: 150.8;
+      transition: stroke-dashoffset 1.2s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .stat .ring-wrap .ring-val {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: clamp(0.72rem, 1.3vw, 0.92rem);
+      font-weight: 800;
+      color: var(--green);
+    }
+    .stat .n { display: block; font-size: clamp(1rem, 1.8vw, 1.3rem); font-weight: 800; color: var(--green); }
+    .stat .l { font-size: 0.46em; text-transform: uppercase; letter-spacing: 0.07em; color: var(--muted); line-height: 1.35; margin-top: 2px; }
+    .stat.orange .ring-wrap .ring-fg { stroke: var(--orange); }
+    .stat.orange .ring-wrap .ring-val,
+    .stat.orange .n { color: var(--orange); }
+    .stat.orange::before { background: linear-gradient(135deg, rgba(224,126,44,0.4), transparent 60%); }
+    .stat.orange { border-color: rgba(224,126,44,0.2); }
+    .stat.orange::after { background: radial-gradient(circle at 30% 30%, rgba(224,126,44,0.06), transparent 60%); }
+
+    .stat.purple .ring-wrap .ring-fg { stroke: var(--purple); }
+    .stat.purple .ring-wrap .ring-val,
+    .stat.purple .n { color: var(--purple); }
+    .stat.purple::before { background: linear-gradient(135deg, rgba(168,85,247,0.4), transparent 60%); }
+    .stat.purple { border-color: rgba(168,85,247,0.2); }
+    .stat.purple::after { background: radial-gradient(circle at 30% 30%, rgba(168,85,247,0.06), transparent 60%); }
+
+    .stat.teal .ring-wrap .ring-fg { stroke: var(--teal); }
+    .stat.teal .ring-wrap .ring-val,
+    .stat.teal .n { color: var(--teal); }
+    .stat.teal::before { background: linear-gradient(135deg, rgba(20,184,166,0.4), transparent 60%); }
+    .stat.teal { border-color: rgba(20,184,166,0.2); }
+    .stat.teal::after { background: radial-gradient(circle at 30% 30%, rgba(20,184,166,0.06), transparent 60%); }
+
+    .stat.rose .ring-wrap .ring-fg { stroke: var(--rose); }
+    .stat.rose .ring-wrap .ring-val,
+    .stat.rose .n { color: var(--rose); }
+    .stat.rose::before { background: linear-gradient(135deg, rgba(244,63,94,0.4), transparent 60%); }
+    .stat.rose { border-color: rgba(244,63,94,0.2); }
+    .stat.rose::after { background: radial-gradient(circle at 30% 30%, rgba(244,63,94,0.06), transparent 60%); }
+
+    @keyframes countUp { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+    .slide.active .stat .n,
+    .slide.active .stat .ring-wrap .ring-val { animation: countUp 0.6s ease both; }
+    .slide.active .stat:nth-child(1) .n, .slide.active .stat:nth-child(1) .ring-val { animation-delay: 0.15s; }
+    .slide.active .stat:nth-child(2) .n, .slide.active .stat:nth-child(2) .ring-val { animation-delay: 0.3s; }
+    .slide.active .stat:nth-child(3) .n, .slide.active .stat:nth-child(3) .ring-val { animation-delay: 0.45s; }
+    .slide.active .stat:nth-child(4) .n, .slide.active .stat:nth-child(4) .ring-val { animation-delay: 0.6s; }
+
+    .slide.hero {
+      overflow: hidden;
+    }
+    .slide.hero::before {
+      content: '';
+      position: absolute;
+      width: 550px; height: 550px;
+      border-radius: 50%;
+      filter: blur(120px);
+      opacity: 0.22;
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      pointer-events: none;
+      z-index: 0;
+    }
+    .slide.hero::after {
+      background:
+        radial-gradient(ellipse at 50% 40%, rgba(255,255,255,0.02) 0%, transparent 50%),
+        radial-gradient(ellipse at 50% 120%, rgba(0,0,0,0.35) 0%, transparent 55%);
+    }
+    .slide.hero.hero-green::before  { background: var(--green); }
+    .slide.hero.hero-orange::before { background: var(--orange); }
+    .slide.hero.hero-blue::before   { background: var(--blue); }
+    .slide.hero.hero-purple::before { background: var(--purple); }
+    .slide.hero.hero-teal::before   { background: var(--teal); }
+    .slide.hero.hero-rose::before   { background: var(--rose); }
+
+    .slide.hero > * { position: relative; z-index: 1; opacity: 0; }
+
+    .hero-stat-block {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 18px;
+      margin-top: 18px;
+    }
+    .hero-ring {
+      position: relative;
+      width: 80px; height: 80px;
+      flex-shrink: 0;
+    }
+    .hero-ring svg {
+      width: 80px; height: 80px;
+      transform: rotate(-90deg);
+    }
+    .hero-ring .ring-bg {
+      fill: none;
+      stroke: rgba(255,255,255,0.08);
+      stroke-width: 4;
+    }
+    .hero-ring .ring-fg {
+      fill: none;
+      stroke-width: 4;
+      stroke-linecap: round;
+      stroke-dasharray: 219.9;
+      stroke-dashoffset: 219.9;
+      transition: stroke-dashoffset 1.4s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .hero-ring.green .ring-fg  { stroke: var(--green); }
+    .hero-ring.orange .ring-fg { stroke: var(--orange); }
+    .hero-ring.blue .ring-fg   { stroke: var(--blue); }
+    .hero-ring.purple .ring-fg { stroke: var(--purple); }
+    .hero-ring.teal .ring-fg   { stroke: var(--teal); }
+    .hero-ring.rose .ring-fg   { stroke: var(--rose); }
+    .hero-ring .hero-ring-val {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: clamp(1rem, 2vw, 1.4rem);
+      font-weight: 800;
+    }
+    .hero-ring.green .hero-ring-val  { color: var(--green); }
+    .hero-ring.orange .hero-ring-val { color: var(--orange); }
+    .hero-ring.blue .hero-ring-val   { color: var(--blue); }
+    .hero-ring.purple .hero-ring-val { color: var(--purple); }
+    .hero-ring.teal .hero-ring-val   { color: var(--teal); }
+    .hero-ring.rose .hero-ring-val   { color: var(--rose); }
+
+    .hero-stat-text {
+      text-align: left;
+      max-width: 260px;
+    }
+    .hero-stat-text .hero-stat-label {
+      font-size: clamp(0.58rem, 1.1vw, 0.72rem);
+      color: var(--text);
+      line-height: 1.4;
+      font-weight: 500;
+    }
+    .hero-stat-text .hero-stat-src {
+      font-size: 0.48em;
+      color: var(--muted);
+      margin-top: 4px;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+
+    .hero-quote {
+      margin-top: 16px;
+      max-width: 440px;
+      position: relative;
+      padding: 10px 16px 10px 20px;
+      border-radius: 0 10px 10px 0;
+      background: rgba(22,32,53,0.35);
+      backdrop-filter: blur(14px) saturate(1.3);
+      -webkit-backdrop-filter: blur(14px) saturate(1.3);
+      border: 1px solid rgba(255,255,255,0.05);
+      border-left: none;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.12), inset 0 1px 0 rgba(255,255,255,0.03);
+    }
+    .hero-quote::before {
+      content: '';
+      position: absolute;
+      left: 0; top: 0; bottom: 0;
+      width: 3px;
+      border-radius: 2px;
+    }
+    .hero-quote.green::before  { background: linear-gradient(180deg, var(--green), var(--blue)); }
+    .hero-quote.orange::before { background: linear-gradient(180deg, var(--orange), #e8a84e); }
+    .hero-quote.blue::before   { background: linear-gradient(180deg, var(--blue), var(--green)); }
+    .hero-quote.purple::before { background: linear-gradient(180deg, var(--purple), #c084fc); }
+    .hero-quote.teal::before   { background: linear-gradient(180deg, var(--teal), #5eead4); }
+    .hero-quote.rose::before   { background: linear-gradient(180deg, var(--rose), #fb7185); }
+    .hero-quote blockquote {
+      font-size: clamp(0.58rem, 1.1vw, 0.72rem);
+      font-style: italic;
+      color: var(--text);
+      line-height: 1.55;
+      opacity: 0.92;
+    }
+    .hero-quote cite {
+      display: block;
+      font-size: 0.48em;
+      color: var(--muted);
+      margin-top: 5px;
+      font-style: normal;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+
+    .slide.hero.active > :nth-child(1) { animation: fadeUp 1.0s cubic-bezier(0.16,1,0.3,1) 0.15s both; }
+    .slide.hero.active > :nth-child(2) { animation: fadeUp 1.0s cubic-bezier(0.16,1,0.3,1) 0.30s both; }
+    .slide.hero.active > :nth-child(3) { animation: fadeUp 1.0s cubic-bezier(0.16,1,0.3,1) 0.45s both; }
+    .slide.hero.active > :nth-child(4) { animation: fadeUp 1.0s cubic-bezier(0.16,1,0.3,1) 0.65s both; }
+    .slide.hero.active > :nth-child(5) { animation: fadeUp 1.0s cubic-bezier(0.16,1,0.3,1) 0.85s both; }
+
+    .arow { display: flex; align-items: center; gap: 12px; padding: 8px 0; border-bottom: 1px solid var(--border); font-size: clamp(0.55rem, 1.05vw, 0.65rem); transition: background 0.2s; }
+    .arow:hover { background: rgba(36,133,232,0.04); }
+    .anum { width: 22px; height: 22px; background: linear-gradient(135deg, var(--green), var(--blue)); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.6em; font-weight: 700; flex-shrink: 0; box-shadow: 0 2px 8px rgba(36,133,232,0.25); }
+    .atime { margin-left: auto; color: var(--muted); font-size: 0.7em; flex-shrink: 0; font-weight: 500; letter-spacing: 0.02em; }
+
+    .badge { display: inline-block; background: rgba(36,133,232,0.25); color: var(--green); border: 1px solid rgba(36,133,232,0.3); padding: 1px 7px; border-radius: 5px; font-size: 0.58em; font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em; vertical-align: middle; backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); }
+    .badge.blue   { background: rgba(91,195,245,0.2); color: var(--blue); border-color: rgba(91,195,245,0.3); }
+    .badge.orange { background: rgba(224,126,44,0.2); color: var(--orange); border-color: rgba(224,126,44,0.3); }
+    .badge.purple { background: rgba(168,85,247,0.2); color: var(--purple); border-color: rgba(168,85,247,0.3); }
+    .badge.teal   { background: rgba(20,184,166,0.2); color: var(--teal); border-color: rgba(20,184,166,0.3); }
+    .badge.rose   { background: rgba(244,63,94,0.2); color: var(--rose); border-color: rgba(244,63,94,0.3); }
+
+    .logo { font-size: clamp(1.8rem, 4vw, 2.8rem); margin-bottom: 0.15em; }
+
+    .title-kicker {
+      font-size: 0.52em;
+      text-transform: uppercase;
+      letter-spacing: 0.2em;
+      color: var(--blue);
+      margin-bottom: 0.6em;
+      font-weight: 600;
+    }
+    .title-rule {
+      width: 40px; height: 3px;
+      background: linear-gradient(90deg, var(--green), var(--blue));
+      border-radius: 2px;
+      margin: 14px auto;
+    }
+    .title-tags {
+      display: flex; gap: 8px; justify-content: center;
+      margin-top: 10px; flex-wrap: wrap;
+    }
+    .title-tag {
+      background: rgba(30,45,69,0.4);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 6px;
+      padding: 3px 10px;
+      font-size: 0.55em;
+      font-family: 'JetBrains Mono', Consolas, monospace;
+      color: var(--muted);
+      backdrop-filter: blur(12px) saturate(1.3);
+      -webkit-backdrop-filter: blur(12px) saturate(1.3);
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1), inset 0 1px 0 rgba(255,255,255,0.03);
+    }
+    .author-block {
+      margin-top: 22px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+    }
+    .author-avatar {
+      width: 36px; height: 36px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, rgba(36,133,232,0.4), rgba(91,195,245,0.3));
+      border: 1px solid rgba(255,255,255,0.12);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.85em; font-weight: 800; color: #fff;
+      flex-shrink: 0;
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      box-shadow: 0 2px 12px rgba(36,133,232,0.2);
+    }
+    .author-info { text-align: left; }
+    .author-name { font-size: 0.72em; font-weight: 600; color: var(--text); }
+    .author-role { font-size: 0.55em; color: var(--muted); letter-spacing: 0.04em; }
+    .author-role span { color: var(--blue); font-weight: 600; }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(44px) scale(0.96); filter: blur(8px); }
+      to   { opacity: 1; transform: translateY(0)    scale(1);    filter: blur(0px); }
+    }
+    .slide.active .anim-1 { animation: fadeUp 1.0s cubic-bezier(0.16,1,0.3,1) 0.1s  both; }
+    .slide.active .anim-2 { animation: fadeUp 1.0s cubic-bezier(0.16,1,0.3,1) 0.35s both; }
+    .slide.active .anim-3 { animation: fadeUp 1.0s cubic-bezier(0.16,1,0.3,1) 0.55s both; }
+    .slide.active .anim-4 { animation: fadeUp 1.0s cubic-bezier(0.16,1,0.3,1) 0.75s both; }
+    .slide.active .anim-5 { animation: fadeUp 1.0s cubic-bezier(0.16,1,0.3,1) 0.95s both; }
+
+    @media (prefers-reduced-motion: reduce) {
+      .flow > * {
+        opacity: 1 !important;
+        transform: none !important;
+        filter: none !important;
+        pointer-events: auto !important;
+      }
+      .slide.active .flow > *,
+      .slide.active .anim-1,
+      .slide.active .anim-2,
+      .slide.active .anim-3,
+      .slide.active .anim-4,
+      .slide.active .anim-5 {
+        animation: none !important;
+      }
+    }
+
+    @keyframes exitFwd {
+      from { opacity: 1; transform: translate3d(0,0,0) scale(1); }
+      to   { opacity: 0; transform: translate3d(-100px,0,0) scale(0.92); }
+    }
+    @keyframes enterFwd {
+      from { opacity: 0; transform: translate3d(120px,0,0) scale(1.06); }
+      to   { opacity: 1; transform: translate3d(0,0,0) scale(1); }
+    }
+    @keyframes exitBwd {
+      from { opacity: 1; transform: translate3d(0,0,0) scale(1); }
+      to   { opacity: 0; transform: translate3d(120px,0,0) scale(1.06); }
+    }
+    @keyframes enterBwd {
+      from { opacity: 0; transform: translate3d(-100px,0,0) scale(0.92); }
+      to   { opacity: 1; transform: translate3d(0,0,0) scale(1); }
+    }
+    @keyframes titleLaunch {
+      0%   { opacity: 1; transform: scale(1);    filter: blur(0px)  brightness(1); }
+      55%  { opacity: 1; transform: scale(1.35); filter: blur(0px)  brightness(2.2); }
+      100% { opacity: 0; transform: scale(2.4);  filter: blur(18px) brightness(0.4); }
+    }
+    @keyframes enterRise {
+      from { opacity: 0; transform: scale(1.04); filter: brightness(0); }
+      to   { opacity: 1; transform: scale(1);    filter: brightness(1); }
+    }
+
+    .slide.exit-fwd    { z-index:1; animation: exitFwd     0.6s cubic-bezier(0.4,0,0.2,1) forwards; }
+    .slide.enter-fwd   { z-index:2; animation: enterFwd    0.6s cubic-bezier(0.4,0,0.2,1) forwards; display:flex !important; }
+    .slide.exit-bwd    { z-index:1; animation: exitBwd     0.6s cubic-bezier(0.4,0,0.2,1) forwards; }
+    .slide.enter-bwd   { z-index:2; animation: enterBwd    0.6s cubic-bezier(0.4,0,0.2,1) forwards; display:flex !important; }
+    .slide.exit-launch { z-index:1; animation: titleLaunch 0.85s cubic-bezier(0.4,0,1,1)          forwards; }
+    .slide.enter-rise  { z-index:2; animation: enterRise   0.85s cubic-bezier(0.16,1,0.3,1) 0.65s both; display:flex !important; }
+
+    #title-bg {
+      position: absolute;
+      inset: 0;
+      z-index: 0;
+      pointer-events: none;
+    }
+    .title-content {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+    }
+
+    #slide-overview {
+      position: fixed;
+      inset: 0;
+      z-index: 100;
+      display: none;
+      flex-direction: column;
+      padding: 20px 28px 28px;
+      background: rgba(8, 12, 22, 0.94);
+      backdrop-filter: blur(18px) saturate(1.2);
+      -webkit-backdrop-filter: blur(18px) saturate(1.2);
+    }
+    #slide-overview.open { display: flex; }
+    .overview-header {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 16px;
+      flex-shrink: 0;
+    }
+    .overview-header h2 {
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: var(--text);
+      border: none;
+      padding: 0;
+      margin: 0;
+    }
+    .overview-header h2::after { display: none; }
+    .overview-hint {
+      font-size: 0.58rem;
+      color: var(--muted);
+      letter-spacing: 0.04em;
+    }
+    .overview-hint kbd {
+      font-family: inherit;
+      font-size: 0.95em;
+      padding: 1px 5px;
+      border-radius: 4px;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      color: var(--text);
+    }
+    #overview-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(152px, 1fr));
+      gap: 12px;
+      overflow-y: auto;
+      flex: 1;
+      padding: 4px 2px 8px;
+      align-content: start;
+    }
+    .overview-item {
+      display: flex;
+      flex-direction: column;
+      text-align: left;
+      padding: 0;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 10px;
+      background: var(--surface);
+      cursor: pointer;
+      overflow: hidden;
+      transition: border-color 0.2s, box-shadow 0.2s, transform 0.2s;
+      font-family: inherit;
+      color: inherit;
+    }
+    .overview-item:hover {
+      border-color: rgba(36, 133, 232, 0.45);
+      box-shadow: 0 4px 20px rgba(36, 133, 232, 0.15);
+      transform: translateY(-2px);
+    }
+    .overview-item.current {
+      border-color: var(--green);
+      box-shadow: 0 0 0 1px var(--green), 0 4px 24px rgba(36, 133, 232, 0.25);
+    }
+    .overview-thumb {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 16 / 10;
+      overflow: hidden;
+      background: var(--dark);
+      pointer-events: none;
+    }
+    .overview-thumb-inner {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 960px;
+      height: 600px;
+      transform-origin: top left;
+      pointer-events: none;
+    }
+    .overview-thumb-inner.slide-preview {
+      display: flex !important;
+      position: absolute;
+      inset: auto;
+      padding: 28px 40px;
+      flex-direction: column;
+      justify-content: center;
+    }
+    .overview-meta {
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+      padding: 8px 10px 10px;
+    }
+    .overview-num {
+      flex-shrink: 0;
+      font-size: 0.55rem;
+      font-weight: 700;
+      color: var(--green);
+      min-width: 1.4em;
+    }
+    .overview-label {
+      font-size: 0.52rem;
+      line-height: 1.35;
+      color: var(--text);
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    #progress { position: fixed; top: 0; left: 0; height: 2px; background: linear-gradient(90deg, var(--green), var(--blue)); transition: width 0.4s cubic-bezier(0.4,0,0.2,1); z-index: 50; box-shadow: 0 0 12px rgba(36,133,232,0.3); }
+
+    #brand { position: fixed; bottom: 16px; left: 24px; z-index: 50; opacity: 0.55; transition: opacity 0.3s; font-size: 0.68rem; font-weight: 700; letter-spacing: 0.02em; color: var(--muted); }
+    #brand:hover { opacity: 1; }
+    #brand span { color: var(--orange); }
+
+    #nav { position: fixed; bottom: 18px; right: 20px; display: flex; align-items: center; gap: 10px; z-index: 50; opacity: 0.55; transition: opacity 0.3s; }
+    #nav:hover { opacity: 1; }
+    #counter { font-size: 0.65em; color: var(--muted); font-family: 'Inter', monospace; font-weight: 500; letter-spacing: 0.04em; }
+    .nbtn { background: rgba(22,32,53,0.4); border: 1px solid rgba(255,255,255,0.08); color: var(--muted); width: 28px; height: 28px; border-radius: 8px; cursor: pointer; font-size: 1em; display: flex; align-items: center; justify-content: center; transition: all 0.25s; backdrop-filter: blur(12px) saturate(1.3); -webkit-backdrop-filter: blur(12px) saturate(1.3); box-shadow: 0 2px 8px rgba(0,0,0,0.12); }
+    .nbtn:hover { background: rgba(36,133,232,0.2); border-color: rgba(36,133,232,0.35); color: var(--text); box-shadow: 0 2px 12px rgba(36,133,232,0.15); }
+  </style>
+</head>
+<body>
+
+<svg style="position:absolute;width:0;height:0;">
+  <defs>
+    <linearGradient id="ring-grad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="var(--green)"/>
+      <stop offset="100%" stop-color="var(--blue)"/>
+    </linearGradient>
+    <linearGradient id="ring-grad-orange" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="var(--orange)"/>
+      <stop offset="100%" stop-color="#e8a84e"/>
+    </linearGradient>
+    <linearGradient id="ring-grad-purple" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="var(--purple)"/>
+      <stop offset="100%" stop-color="#c084fc"/>
+    </linearGradient>
+    <linearGradient id="ring-grad-teal" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="var(--teal)"/>
+      <stop offset="100%" stop-color="#5eead4"/>
+    </linearGradient>
+    <linearGradient id="ring-grad-rose" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="var(--rose)"/>
+      <stop offset="100%" stop-color="#fb7185"/>
+    </linearGradient>
+  </defs>
+</svg>
+
+<div id="progress"></div>
+
+<div id="deck">
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!-- 1 · TITLE SLIDE                                             -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+<div class="slide center active">
+  <canvas id="title-bg"></canvas>
+  <div class="title-content">
+    <p class="title-kicker anim-1">Bad API Challenge · Briefing</p>
+    <h1 class="anim-2" style="font-size:clamp(1.6rem,4vw,2.6rem);background:linear-gradient(120deg,var(--text) 40%,var(--blue));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">Before You Write a Line of Code</h1>
+    <p class="subtitle anim-3">Four resilience patterns that decide who wins this challenge</p>
+    <div class="title-rule anim-3"></div>
+    <div class="title-tags anim-4">
+      <span class="title-tag">timeouts</span>
+      <span class="title-tag">retry &amp; backoff</span>
+      <span class="title-tag">rate limits</span>
+      <span class="title-tag">pagination</span>
+    </div>
+    <div class="author-block anim-5">
+      <div class="author-avatar">🔥</div>
+      <div class="author-info">
+        <div class="author-name">Bad API Challenge</div>
+        <div class="author-role"><span>2,000 people</span> · 3 endpoints · 1 winning CSV</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!-- 2 · AGENDA                                                  -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+<div class="slide">
+  <h2>What We're Covering</h2>
+  <div class="arow"><div class="anum">1</div><span>The Mission — what you're actually building</span><span class="atime">~3 min</span></div>
+  <div class="arow"><div class="anum">2</div><span>Why It Fights Back — the chaos, endpoint by endpoint</span><span class="atime">~4 min</span></div>
+  <div class="arow"><div class="anum">3</div><span>Timeouts — the pattern that eliminates the most people</span><span class="atime">~4 min</span></div>
+  <div class="arow"><div class="anum">4</div><span>Retry Logic &amp; Exponential Backoff</span><span class="atime">~3 min</span></div>
+  <div class="arow"><div class="anum">5</div><span>Rate Limits &amp; <code>Retry-After</code></span><span class="atime">~3 min</span></div>
+  <div class="arow"><div class="anum">6</div><span>Cursor Pagination</span><span class="atime">~2 min</span></div>
+  <div class="arow"><div class="anum">7</div><span>Go build it</span><span class="atime">~1 min</span></div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!-- SECTION BREAK — Part 1                                      -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+<div class="slide center hero hero-green">
+  <p class="section-label">Part 1</p>
+  <h1 style="color:var(--green);">The Mission</h1>
+  <p class="subtitle">Three broken endpoints. One CSV. One winner.</p>
+  <div class="hero-stat-block">
+    <div class="hero-ring green">
+      <svg viewBox="0 0 80 80"><circle class="ring-bg" cx="40" cy="40" r="35"/><circle class="ring-fg" cx="40" cy="40" r="35" data-pct="100"/></svg>
+      <span class="hero-ring-val" data-count="100">0%</span>
+    </div>
+    <div class="hero-stat-text">
+      <div class="hero-stat-label">correct, out of 2,000 rows, in a single submission — that's the only bar that counts</div>
+      <div class="hero-stat-src">ValidationService.java</div>
+    </div>
+  </div>
+  <div class="hero-quote green">
+    <blockquote>"The API isn't broken by accident. It's broken on purpose, to teach you how production actually behaves."</blockquote>
+    <cite>Bad API Challenge</cite>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!-- Your Mission                                                -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+<div class="slide">
+  <h2>Your Mission</h2>
+  <div class="stats">
+    <div class="stat">
+      <span class="n" data-count="2000" data-suffix="">0</span>
+      <span class="l">People to collect</span>
+    </div>
+    <div class="stat teal">
+      <span class="n" data-count="3" data-suffix="">0</span>
+      <span class="l">Endpoints to call</span>
+    </div>
+    <div class="stat purple">
+      <span class="n" data-count="1" data-suffix="">0</span>
+      <span class="l">Winning API call</span>
+    </div>
+    <div class="stat orange">
+      <span class="n" data-count="2" data-suffix=" min">0 min</span>
+      <span class="l">Target time, resilient code</span>
+    </div>
+  </div>
+  <div class="g2" style="margin-top:10px;">
+    <div class="card">
+      <h3>Compute this per person</h3>
+      <pre><code class="language-java">String computedValue = firstName + age + surname;
+// Paul Jones, age 38 → "Paul38Jones"</code></pre>
+      <p style="margin-top:6px;">Then submit one CSV, one <code style="background:var(--surface2);padding:1px 5px;border-radius:3px;">POST /api/submit</code> call, exactly 2,000 rows.</p>
+    </div>
+    <div class="card green">
+      <h3>How you win</h3>
+      <ul>
+        <li>Header: <strong>firstName,surname,age,computedValue</strong></li>
+        <li>Exactly 2,000 data rows, no duplicates</li>
+        <li>Every value must match the API exactly</li>
+        <li>First <strong>fully correct</strong> submission takes the leaderboard</li>
+      </ul>
+    </div>
+  </div>
+  <div class="callout orange">
+    <strong>Watch out:</strong> submit with less than 10% correct and you get redirected somewhere embarrassing. Validate locally before you submit.
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!-- Why It Fights Back                                          -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+<div class="slide">
+  <h2>Why It Fights Back</h2>
+  <p style="margin-bottom:8px;">Every request rolls the dice on a timeout first — then each endpoint adds its own trouble on top.</p>
+  <table>
+    <thead>
+      <tr><th>Endpoint</th><th>Timeout</th><th>Slowness</th><th>Its own problem</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><code>/people/firstnames</code></td>
+        <td>5%</td>
+        <td>30% (1–3s)</td>
+        <td><span class="badge rose">35% random 500/503/504</span></td>
+      </tr>
+      <tr>
+        <td><code>/people/surnames</code></td>
+        <td>5%</td>
+        <td>30% (1–3s)</td>
+        <td><span class="badge orange">Rate limited, 20–60 req/min, shifts mid-run</span></td>
+      </tr>
+      <tr>
+        <td><code>/people/ages</code></td>
+        <td>5%</td>
+        <td>30% (1–3s)</td>
+        <td><span class="badge blue">Cursor pagination — 20 pages to fetch</span></td>
+      </tr>
+    </tbody>
+  </table>
+  <div class="callout rose" style="margin-top:12px;">
+    <strong>These compound.</strong> <code style="background:var(--surface2);padding:1px 5px;border-radius:3px;">/people/ages</code> needs 20 sequential requests to finish. At a 5% timeout chance each, there's roughly a <strong>64% chance</strong> at least one of those 20 requests times out. It's not an edge case — it's the median run.
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!-- SECTION BREAK — Part 2                                      -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+<div class="slide center hero hero-rose">
+  <p class="section-label">Part 2</p>
+  <h1 style="color:var(--rose);">The Four Patterns</h1>
+  <p class="subtitle">Everything below is a direct response to a specific line of chaos code</p>
+  <div class="hero-stat-block">
+    <div class="hero-ring rose">
+      <svg viewBox="0 0 80 80"><circle class="ring-bg" cx="40" cy="40" r="35"/><circle class="ring-fg" cx="40" cy="40" r="35" data-pct="64"/></svg>
+      <span class="hero-ring-val" data-count="64">0%</span>
+    </div>
+    <div class="hero-stat-text">
+      <div class="hero-stat-label">chance your ages fetch hits at least one simulated timeout — the pattern most people skip</div>
+      <div class="hero-stat-src">5% per request × 20 sequential pages</div>
+    </div>
+  </div>
+  <div class="hero-quote rose">
+    <blockquote>"Without a client-side timeout, your code doesn't fail loudly. It just sits there. Forever."</blockquote>
+    <cite>The #1 reason people don't finish</cite>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!-- Timeouts                                                    -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+<div class="slide">
+  <h2>Timeouts — Set Them, Or Hang Forever</h2>
+  <div class="g2">
+    <div class="card rose">
+      <h3>What's actually happening</h3>
+      <ul>
+        <li>On a 5% roll, the server accepts your request and goes silent</li>
+        <li>It doesn't error immediately — it <strong>sleeps for two full minutes</strong>, then finally replies <code style="background:var(--surface2);padding:1px 5px;border-radius:3px;">408</code></li>
+        <li>Your HTTP client's default is usually "wait forever" — that's the trap</li>
+        <li>You must set your own timeout, well under two minutes</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3>The fix — HttpRequest.timeout()</h3>
+      <pre><code class="language-java">HttpRequest request = HttpRequest
+    .newBuilder(URI.create(url))
+    .timeout(Duration.ofSeconds(10))
+    .GET()
+    .build();
+
+try {
+  var res = client.send(request, BodyHandlers.ofString());
+} catch (HttpTimeoutException e) {
+  // treat like a retryable failure
+}</code></pre>
+    </div>
+  </div>
+  <div class="callout rose">
+    <strong>Pick a number well above your slowest normal response (~3s) and well below the 2-minute hang — 8–10 seconds is comfortable.</strong> <code style="background:var(--surface2);padding:1px 5px;border-radius:3px;">java.net.http.HttpClient</code> throws <code style="background:var(--surface2);padding:1px 5px;border-radius:3px;">HttpTimeoutException</code> the moment it fires — no extra library needed.
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!-- Retry Logic                                                 -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+<div class="slide">
+  <h2>Retry Logic &amp; Exponential Backoff</h2>
+  <div class="g2">
+    <div class="card orange">
+      <h3>The rule</h3>
+      <ul>
+        <li><code style="background:var(--surface2);padding:1px 5px;border-radius:3px;">firstnames</code> fails outright ~35% of the time — 500, 503, or 504</li>
+        <li>A dropped timeout also surfaces as a failed request — treat <code style="background:var(--surface2);padding:1px 5px;border-radius:3px;">408</code> the same way</li>
+        <li>Don't retry instantly — back off, or you make the overload worse</li>
+        <li>Always cap the retry count so a truly dead endpoint doesn't spin forever</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3>The shape</h3>
+      <pre><code class="language-java">int retries = 0;
+while (true) {
+  var res = client.send(request, BodyHandlers.ofString());
+  if (res.statusCode() < 300) return res;
+
+  if (res.statusCode() >= 500 || res.statusCode() == 408) {
+    if (retries >= MAX_RETRIES) throw new IOException();
+    long backoff = 1000L * (1L << retries); // 1s, 2s, 4s...
+    Thread.sleep(backoff);
+    retries++;
+    continue;
+  }
+  throw new IOException("HTTP " + res.statusCode());
+}</code></pre>
+    </div>
+  </div>
+  <div class="callout orange">
+    <strong>Bonus pattern:</strong> a circuit breaker — stop calling an endpoint that's failed N times in a row, wait, then probe again — is the natural next step once retries are working.
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!-- Rate Limiting                                               -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+<div class="slide">
+  <h2>Rate Limits — the Number Moves Under You</h2>
+  <div class="g2">
+    <div class="card purple">
+      <h3>What makes this one nasty</h3>
+      <ul>
+        <li><code style="background:var(--surface2);padding:1px 5px;border-radius:3px;">surnames</code> assigns each client a limit between 20 and 60 req/min</li>
+        <li>There's a 10% chance that limit <strong>changes again on any given request</strong></li>
+        <li>Whatever worked a moment ago may not work now</li>
+        <li>Hardcoding "wait 2 seconds between calls" will not save you</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3>The fix — honor the header</h3>
+      <pre><code class="language-java">if (res.statusCode() == 429) {
+  long wait = res.headers()
+      .firstValue("Retry-After")
+      .map(Long::parseLong)
+      .orElse(60L);
+  System.out.println("Rate limited, waiting " + wait + "s");
+  Thread.sleep(wait * 1000);
+  continue; // retry without burning an attempt
+}</code></pre>
+    </div>
+  </div>
+  <div class="callout purple">
+    <strong>Don't guess the limit — read it every time.</strong> The server tells you exactly how long to wait via <code style="background:var(--surface2);padding:1px 5px;border-radius:3px;">Retry-After</code>. Trust that over any number you hardcoded five minutes ago.
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!-- Pagination                                                  -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+<div class="slide">
+  <h2>Cursor Pagination — 20 Trips, Not One</h2>
+  <div class="g60">
+    <div class="card blue">
+      <h3>The loop</h3>
+      <pre><code class="language-java">String cursor = null;
+Map<Long, Integer> ages = new LinkedHashMap<>();
+
+do {
+  String url = cursor == null
+      ? BASE_URL + "/people/ages"
+      : BASE_URL + "/people/ages?cursor=" + cursor;
+
+  JsonNode root = mapper.readTree(
+      fetchWithRetry(url).body());
+
+  for (JsonNode item : root.get("data")) {
+    ages.put(item.get("id").asLong(), item.get("age").asInt());
+  }
+
+  boolean hasMore = root.get("hasMore").asBoolean();
+  cursor = hasMore ? root.get("cursor").asText() : null;
+} while (cursor != null);</code></pre>
+    </div>
+    <div class="card">
+      <h3>The numbers</h3>
+      <div class="stats" style="margin:6px 0;">
+        <div class="stat blue">
+          <span class="n" data-count="100" data-suffix="">0</span>
+          <span class="l">Records per page</span>
+        </div>
+        <div class="stat blue">
+          <span class="n" data-count="20" data-suffix="">0</span>
+          <span class="l">Pages to fetch</span>
+        </div>
+      </div>
+      <p>Every one of those 20 requests carries the same 5% timeout / 30% slowness risk as everything else. Your retry-and-timeout logic has to wrap <em>each page</em>, not just the outer loop.</p>
+    </div>
+  </div>
+  <div class="callout">
+    <strong>Stop condition:</strong> loop until <code style="background:var(--surface2);padding:1px 5px;border-radius:3px;">hasMore</code> is false — not until you've counted to a number you assumed in advance.
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!-- CLOSING — Go Build It                                       -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+<div class="slide center hero hero-green">
+  <p class="section-label">Part 3</p>
+  <h1 style="color:var(--green);">Go Build It</h1>
+  <p class="subtitle">Four patterns, one file, ~2 minutes if you get them all working together</p>
+  <div class="g2" style="margin-top:16px;text-align:left;width:min(560px,90%);">
+    <div class="card teal">
+      <h3>Checklist</h3>
+      <ul>
+        <li>Client-side timeout on every request (~10s)</li>
+        <li>Retry on 5xx and 408, with backoff</li>
+        <li>Honor <code style="background:var(--surface2);padding:1px 5px;border-radius:3px;">Retry-After</code> on 429</li>
+        <li>Page <code style="background:var(--surface2);padding:1px 5px;border-radius:3px;">/ages</code> until <code style="background:var(--surface2);padding:1px 5px;border-radius:3px;">hasMore</code> is false</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3>Rules reminder</h3>
+      <ul>
+        <li>2,000 rows, one <code style="background:var(--surface2);padding:1px 5px;border-radius:3px;">POST</code>, exactly right</li>
+        <li>Validate locally before you submit</li>
+        <li>First perfect submission wins</li>
+        <li>Any language, any libraries</li>
+      </ul>
+    </div>
+  </div>
+  <div class="hero-quote green" style="margin-top:18px;">
+    <blockquote>"Start one endpoint at a time. Get first names working end-to-end before you touch pagination. Good luck."</blockquote>
+    <cite>Now go break the Bad API</cite>
+  </div>
+</div>
+
+</div><!-- /#deck -->
+
+<div id="brand"><span>🔥</span> Bad API Challenge</div>
+
+<div id="nav">
+  <span id="counter">1 / 1</span>
+  <button class="nbtn" id="btn-prev" title="Previous (←)">‹</button>
+  <button class="nbtn" id="btn-next" title="Next (→)">›</button>
+</div>
+
+<div id="slide-overview" aria-hidden="true" role="dialog" aria-label="Slide overview">
+  <div class="overview-header">
+    <h2>Slide overview</h2>
+    <span class="overview-hint">Click a slide to jump · <kbd>O</kbd> or <kbd>Esc</kbd> to close</span>
+  </div>
+  <div id="overview-grid"></div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js" integrity="sha384-F/bZzf7p3Joyp5psL90p/p89AZJsndkSoGwRpXcZhleCWhd8SnRuoYo4d0yirjJp" crossorigin="anonymous"></script>
+<script>
+  document.querySelectorAll('pre code').forEach(b => hljs.highlightElement(b));
+
+  const slides   = Array.from(document.querySelectorAll('#deck .slide'));
+  const counter  = document.getElementById('counter');
+  const bar      = document.getElementById('progress');
+  const overview = document.getElementById('slide-overview');
+  const overviewGrid = document.getElementById('overview-grid');
+  let cur  = 0;
+  let busy = false;
+  let overviewBuilt = false;
+  let startParticles = () => {}, stopParticles = () => {};
+
+  const PREVIEW_W = 960;
+  const PREVIEW_H = 600;
+
+  function getSlideTitle(slide, i) {
+    const h2 = slide.querySelector('h2');
+    if (h2) return h2.textContent.trim();
+    const h1 = slide.querySelector('h1');
+    if (h1) return h1.textContent.trim();
+    const label = slide.querySelector('.section-label');
+    if (label) return label.textContent.trim();
+    return 'Slide ' + (i + 1);
+  }
+
+  function buildOverview() {
+    if (overviewBuilt) return;
+    overviewBuilt = true;
+    slides.forEach((slide, i) => {
+      const item = document.createElement('button');
+      item.type = 'button';
+      item.className = 'overview-item';
+      item.dataset.index = String(i);
+      item.title = getSlideTitle(slide, i);
+
+      const thumb = document.createElement('div');
+      thumb.className = 'overview-thumb';
+
+      const inner = document.createElement('div');
+      inner.className = 'overview-thumb-inner slide-preview';
+      const clone = slide.cloneNode(true);
+      clone.classList.remove('active', 'exit-fwd', 'exit-bwd', 'enter-fwd', 'enter-bwd', 'exit-launch', 'enter-rise');
+      clone.querySelectorAll('#title-bg, canvas').forEach(el => el.remove());
+      clone.style.cssText = 'display:flex;position:relative;inset:auto;width:' + PREVIEW_W + 'px;height:' + PREVIEW_H + 'px;';
+      inner.appendChild(clone);
+      thumb.appendChild(inner);
+
+      const meta = document.createElement('div');
+      meta.className = 'overview-meta';
+      const num = document.createElement('span');
+      num.className = 'overview-num';
+      num.textContent = String(i + 1);
+      const label = document.createElement('span');
+      label.className = 'overview-label';
+      label.textContent = getSlideTitle(slide, i);
+
+      meta.append(num, label);
+      item.append(thumb, meta);
+      item.addEventListener('click', () => {
+        closeOverview();
+        go(i);
+      });
+      overviewGrid.appendChild(item);
+    });
+    layoutOverviewThumbs();
+    window.addEventListener('resize', layoutOverviewThumbs);
+  }
+
+  function layoutOverviewThumbs() {
+    overviewGrid.querySelectorAll('.overview-thumb').forEach(thumb => {
+      const inner = thumb.querySelector('.overview-thumb-inner');
+      if (!inner) return;
+      const scale = thumb.clientWidth / PREVIEW_W;
+      inner.style.transform = 'scale(' + scale + ')';
+      thumb.style.height = (PREVIEW_H * scale) + 'px';
+      thumb.style.aspectRatio = 'auto';
+    });
+  }
+
+  function updateOverviewHighlight() {
+    overviewGrid.querySelectorAll('.overview-item').forEach((el, i) => {
+      el.classList.toggle('current', i === cur);
+    });
+    const current = overviewGrid.querySelector('.overview-item.current');
+    if (current) current.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+  }
+
+  function openOverview() {
+    if (busy) return;
+    buildOverview();
+    overview.classList.add('open');
+    overview.setAttribute('aria-hidden', 'false');
+    requestAnimationFrame(() => {
+      layoutOverviewThumbs();
+      updateOverviewHighlight();
+    });
+  }
+
+  function closeOverview() {
+    overview.classList.remove('open');
+    overview.setAttribute('aria-hidden', 'true');
+  }
+
+  function toggleOverview() {
+    if (overview.classList.contains('open')) closeOverview();
+    else openOverview();
+  }
+
+  overview.addEventListener('click', e => {
+    if (e.target === overview) closeOverview();
+  });
+
+  function go(n) {
+    if (busy) return;
+    const target = Math.max(0, Math.min(slides.length - 1, n));
+    if (target === cur) return;
+
+    busy = true;
+    const from      = slides[cur];
+    const to        = slides[target];
+    const fwd       = target > cur;
+    const fromTitle = (cur === 0 && fwd);
+
+    if (cur === 0) stopParticles();
+    from.style.willChange = 'transform, opacity, filter';
+    to.style.willChange   = 'transform, opacity, filter';
+
+    cur = target;
+    counter.textContent = (cur + 1) + ' / ' + slides.length;
+    bar.style.width = ((cur + 1) / slides.length * 100) + '%';
+
+    from.classList.add(fromTitle ? 'exit-launch' : (fwd ? 'exit-fwd' : 'exit-bwd'));
+    to.classList.add  (fromTitle ? 'enter-rise'  : (fwd ? 'enter-fwd' : 'enter-bwd'));
+
+    setTimeout(() => {
+      from.classList.remove('active', 'exit-launch', 'exit-fwd', 'exit-bwd');
+      from.style.willChange = '';
+      from.style.display = '';
+      to.classList.remove('enter-rise', 'enter-fwd', 'enter-bwd');
+      to.classList.add('active');
+      to.style.willChange = '';
+      if (cur === 0) startParticles();
+      animateSlide(to);
+      if (overview.classList.contains('open')) updateOverviewHighlight();
+      busy = false;
+    }, fromTitle ? 1550 : 650);
+  }
+
+  document.getElementById('btn-prev').addEventListener('click', () => go(cur - 1));
+  document.getElementById('btn-next').addEventListener('click', () => go(cur + 1));
+
+  document.addEventListener('keydown', e => {
+    if (e.key === 'o' || e.key === 'O') {
+      e.preventDefault();
+      toggleOverview();
+      return;
+    }
+    if (overview.classList.contains('open')) {
+      if (e.key === 'Escape') {
+        e.preventDefault();
+        closeOverview();
+        return;
+      }
+      if (['ArrowRight', 'ArrowDown', ' ', 'ArrowLeft', 'ArrowUp'].includes(e.key)) {
+        e.preventDefault();
+        return;
+      }
+    }
+    if (['ArrowRight','ArrowDown',' '].includes(e.key)) { e.preventDefault(); go(cur + 1); }
+    if (['ArrowLeft', 'ArrowUp'      ].includes(e.key)) { e.preventDefault(); go(cur - 1); }
+    if (e.key === 'Home') go(0);
+    if (e.key === 'End')  go(slides.length - 1);
+  });
+
+  counter.textContent = '1 / ' + slides.length;
+  bar.style.width = (1 / slides.length * 100) + '%';
+
+  function replayEntranceAnimations(slide) {
+    slide.querySelectorAll('.anim-1, .anim-2, .anim-3, .anim-4, .anim-5').forEach(el => {
+      el.style.animation = 'none';
+      void el.offsetWidth;
+      el.style.animation = '';
+    });
+    if (!slide.dataset.staggerPlayed) {
+      slide.dataset.staggerPlayed = '1';
+      return;
+    }
+    slide.querySelectorAll('.flow > *').forEach(el => {
+      el.style.animation = 'none';
+      void el.offsetWidth;
+      el.style.animation = '';
+    });
+  }
+
+  function animateSlide(slide) {
+    replayEntranceAnimations(slide);
+
+    const CIRC_SMALL = 2 * Math.PI * 24;
+    const CIRC_HERO  = 2 * Math.PI * 35;
+    const isHero = slide.classList.contains('hero');
+
+    function getDelay(el) {
+      if (isHero) {
+        const heroParent = el.closest('.hero-stat-block') || el.closest('.hero-ring');
+        if (heroParent) return 850;
+        return 500;
+      }
+      const stat = el.closest('.stat');
+      if (stat) {
+        const container = stat.parentElement;
+        const idx = Array.from(container.children).filter(c => c.classList.contains('stat')).indexOf(stat);
+        return idx * 150 + 150;
+      }
+      return 0;
+    }
+
+    slide.querySelectorAll('.ring-fg').forEach(ring => {
+      const pct  = parseFloat(ring.dataset.pct) || 0;
+      const circ = ring.closest('.hero-ring') ? CIRC_HERO : CIRC_SMALL;
+      ring.style.transition = 'none';
+      ring.style.strokeDasharray  = circ;
+      ring.style.strokeDashoffset = circ;
+      void ring.offsetWidth;
+      const delay = getDelay(ring);
+      setTimeout(() => {
+        ring.style.transition = 'stroke-dashoffset 1.2s cubic-bezier(0.4, 0, 0.2, 1)';
+        ring.style.strokeDashoffset = circ - (circ * pct / 100);
+      }, delay);
+    });
+
+    slide.querySelectorAll('[data-count]').forEach(el => {
+      const target = parseFloat(el.dataset.count);
+      const suffix = el.dataset.suffix || '%';
+      const isFloat = target !== Math.floor(target);
+      const duration = 1000;
+      const delay = getDelay(el);
+      el.textContent = '0' + suffix;
+
+      setTimeout(() => {
+        const start = performance.now();
+        function tick(now) {
+          const elapsed = now - start;
+          const progress = Math.min(elapsed / duration, 1);
+          const eased = 1 - Math.pow(1 - progress, 3);
+          const current = target * eased;
+          el.textContent = (isFloat ? current.toFixed(1) : Math.round(current)) + suffix;
+          if (progress < 1) requestAnimationFrame(tick);
+        }
+        requestAnimationFrame(tick);
+      }, delay);
+    });
+  }
+
+  animateSlide(slides[0]);
+
+  (function () {
+    const canvas = document.getElementById('title-bg');
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+
+    const zoom = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--zoom')) || 1.75;
+    function resize() {
+      canvas.width  = window.innerWidth / zoom;
+      canvas.height = window.innerHeight / zoom;
+    }
+    resize();
+    window.addEventListener('resize', resize);
+
+    const N        = 75;
+    const MAX_DIST = 160;
+    const pts = Array.from({ length: N }, () => ({
+      x:  Math.random() * (window.innerWidth / zoom),
+      y:  Math.random() * (window.innerHeight / zoom),
+      vx: (Math.random() - 0.5) * 0.38,
+      vy: (Math.random() - 0.5) * 0.38,
+      r:  Math.random() * 1.6 + 0.7,
+    }));
+
+    let mx = canvas.width  / 2;
+    let my = canvas.height / 2;
+    window.addEventListener('mousemove', e => { mx = e.clientX / zoom; my = e.clientY / zoom; });
+
+    let rafId = null;
+
+    function draw() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      const ox = (mx - canvas.width  / 2) * 0.018;
+      const oy = (my - canvas.height / 2) * 0.018;
+
+      for (let i = 0; i < pts.length; i++) {
+        for (let j = i + 1; j < pts.length; j++) {
+          const dx = (pts[i].x + ox) - (pts[j].x + ox);
+          const dy = (pts[i].y + oy) - (pts[j].y + oy);
+          const d  = Math.sqrt(dx * dx + dy * dy);
+          if (d < MAX_DIST) {
+            ctx.beginPath();
+            ctx.strokeStyle = `rgba(91,195,245,${(1 - d / MAX_DIST) * 0.28})`;
+            ctx.lineWidth = 0.8;
+            ctx.moveTo(pts[i].x + ox, pts[i].y + oy);
+            ctx.lineTo(pts[j].x + ox, pts[j].y + oy);
+            ctx.stroke();
+          }
+        }
+      }
+
+      for (const p of pts) {
+        ctx.beginPath();
+        ctx.arc(p.x + ox, p.y + oy, p.r, 0, Math.PI * 2);
+        ctx.fillStyle = 'rgba(91,195,245,0.6)';
+        ctx.fill();
+        p.x += p.vx;
+        p.y += p.vy;
+        if (p.x < 0 || p.x > canvas.width)  p.vx *= -1;
+        if (p.y < 0 || p.y > canvas.height) p.vy *= -1;
+      }
+
+      rafId = requestAnimationFrame(draw);
+    }
+    startParticles = () => { if (!rafId) draw(); };
+    stopParticles  = () => { cancelAnimationFrame(rafId); rafId = null; };
+    draw();
+  })();
+</script>
+</body>
+</html>

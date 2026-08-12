@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bad API Challenge - Home</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1>🔥 Bad API Challenge</h1>
+            <p>Test your resilient programming skills against a deliberately unreliable API</p>
+        </div>
+    </header>
+
+    <nav>
+        <ul>
+            <li><a href="index.html">Home</a></li>
+            <li><a href="docs.html">Documentation</a></li>
+            <li><a href="submit.html">Submit Solution</a></li>
+            <li><a href="leaderboard.html">Leaderboard</a></li>
+            <li><a href="/swagger-ui.html" target="_blank">API Reference</a></li>
+        </ul>
+    </nav>
+
+    <div class="container">
+        <div class="card">
+            <h2>Welcome to the Challenge!</h2>
+            <p>
+                This is not your typical API. This API is <strong>intentionally broken</strong> to simulate 
+                real-world production issues you might encounter in an overloaded or poorly designed system.
+            </p>
+            
+            <div class="alert alert-warning">
+                <strong>⚠️ Warning:</strong> This API will frustrate you. That's the point! 
+                Learn to handle failures gracefully.
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>🎯 Your Mission</h2>
+            <p>Collect data for <strong>2,000 people</strong> by calling three API endpoints:</p>
+            <ul style="margin-left: 2rem; margin-top: 1rem;">
+                <li><strong>First Names</strong> - Get each person's first name</li>
+                <li><strong>Surnames</strong> - Get each person's surname</li>
+                <li><strong>Ages</strong> - Get each person's age</li>
+            </ul>
+            
+            <h3>Compute the Final Value</h3>
+            <p>For each person, calculate: <code>computedValue = firstName + age + surname</code></p>
+            <p><strong>Example:</strong> Paul Jones, age 38 → <code>Paul38Jones</code></p>
+
+            <h3>Submit Your CSV</h3>
+            <p>Create a CSV file with this format:</p>
+            <pre><code>firstName,surname,age,computedValue
+John,Smith,25,John25Smith
+Mary,Johnson,30,Mary30Johnson
+...</code></pre>
+
+            <div class="alert alert-success">
+                <strong>🏆 Winner:</strong> First person to submit a correct CSV with all 2,000 records wins! Expected time: ~2 minutes with good resilient code.
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>😈 Known Issues (Network Chaos Mode Active!)</h2>
+            <p>This API simulates a production system under extreme stress. Expect the following:</p>
+            
+            <h3>Basic Bad Behaviors</h3>
+            <div style="display: grid; gap: 1rem; margin-top: 1rem;">
+                <div class="alert alert-error">
+                    <strong>Random HTTP Errors:</strong> 500, 503, 504 errors (~35% of requests)
+                </div>
+                <div class="alert alert-info">
+                    <strong>Pagination Required:</strong> Some endpoints require cursor-based pagination
+                </div>
+            </div>
+
+            <h3 style="margin-top: 2rem;">Network Chaos 🌪️</h3>
+            <div style="display: grid; gap: 1rem; margin-top: 1rem;">
+                <div class="alert alert-warning">
+                    <strong>Random Slowness:</strong> 30% of requests take 1-3 seconds to respond
+                </div>
+                <div class="alert alert-error">
+                    <strong>Timeouts:</strong> 5% of requests never respond (you MUST set timeouts!)
+                </div>
+                <div class="alert alert-error">
+                    <strong>Variable Rate Limiting:</strong> Rate limits vary per client (20-60 req/min) and change randomly!
+                </div>
+            </div>
+
+            <p style="margin-top: 1.5rem; padding: 1rem; background: #fee2e2; border-left: 4px solid #dc2626; border-radius: 0.375rem;">
+                <strong>⚠️ Why This Is Hard:</strong><br>
+                • Rate limits change mid-session - what worked once may not work again<br>
+                • Without proper timeouts, your code will hang forever on 5% of requests<br>
+                • Slow responses look like timeouts - how long do you wait?<br>
+                • You need: retry logic, exponential backoff, timeout handling, and adaptive rate limiting
+            </p>
+        </div>
+
+        <div class="card">
+            <h2>🚀 Get Started</h2>
+            <div style="display: flex; gap: 1rem; flex-wrap: wrap; margin-top: 1rem;">
+                <a href="docs.html" class="btn btn-primary">View Documentation</a>
+                <a href="/swagger-ui.html" target="_blank" class="btn btn-secondary">Explore API</a>
+                <a href="submit.html" class="btn btn-success">Submit Solution</a>
+                <a href="leaderboard.html" class="btn btn-secondary">View Leaderboard</a>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>📊 API Base URL</h2>
+            <pre><code id="baseUrl">http://localhost:8080/api</code></pre>
+            <button class="btn btn-secondary" onclick="copyBaseUrl()">Copy URL</button>
+        </div>
+    </div>
+
+    <script>
+        function copyBaseUrl() {
+            const url = document.getElementById('baseUrl').textContent;
+            navigator.clipboard.writeText(url).then(() => {
+                alert('Base URL copied to clipboard!');
+            });
+        }
+
+        // Update base URL to current host
+        const baseUrl = window.location.origin + '/api';
+        document.getElementById('baseUrl').textContent = baseUrl;
+    </script>
+</body>
+</html>
+
+
