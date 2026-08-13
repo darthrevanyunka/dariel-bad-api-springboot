@@ -4,6 +4,7 @@ import com.challenge.badapi.model.ApiResponse;
 import com.challenge.badapi.model.Person;
 import com.challenge.badapi.service.BadBehaviorService;
 import com.challenge.badapi.service.DataService;
+import com.challenge.badapi.util.ClientIpUtils;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -103,7 +104,7 @@ public class PeopleController {
             )
     })
     public ResponseEntity<ApiResponse<Map<String, Object>>> getSurnames(HttpServletRequest request) {
-        String clientId = getClientIdentifier(request);
+        String clientId = ClientIpUtils.getClientIp(request);
         
         // Network chaos: maybe timeout
         badBehaviorService.maybeTimeout();
@@ -188,18 +189,6 @@ public class PeopleController {
         );
 
         return ResponseEntity.ok(response);
-    }
-
-    /**
-     * Helper method to get client identifier for rate limiting
-     * Uses IP address as identifier
-     */
-    private String getClientIdentifier(HttpServletRequest request) {
-        String forwarded = request.getHeader("X-Forwarded-For");
-        if (forwarded != null && !forwarded.isEmpty()) {
-            return forwarded.split(",")[0].trim();
-        }
-        return request.getRemoteAddr();
     }
 }
 

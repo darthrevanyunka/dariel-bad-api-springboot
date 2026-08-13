@@ -18,7 +18,7 @@ WORKDIR /app
 
 RUN groupadd -r badapi && useradd -r -g badapi badapi
 COPY --from=build /app/target/bad-api-1.0.0.jar app.jar
-RUN chown badapi:badapi app.jar
+RUN mkdir -p /app/logs && chown -R badapi:badapi /app
 USER badapi
 
 EXPOSE 8080

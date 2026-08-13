@@ -10,6 +10,10 @@ services:
       # "reset123" default to the internet. Put your own value in a local
       # .env file (see .env.example) rather than editing this file.
       - BADAPI_ADMIN_KEY=${BADAPI_ADMIN_KEY:?set BADAPI_ADMIN_KEY in .env before starting}
+    volumes:
+      # Persist logs (incl. rotated/gzipped history) on the host across
+      # container restarts and recreations - see logback-spring.xml.
+      - ./logs:/app/logs
     deploy:
       resources:
         limits:

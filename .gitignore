@@ -37,6 +37,7 @@ build/
 
 ### Logs ###
 *.log
+logs/
 
 ### Reference solutions - organizer-only, never committed ###
 /solution/

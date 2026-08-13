@@ -1,6 +1,8 @@
 package com.challenge.badapi.service;
 
 import com.challenge.badapi.model.Person;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import jakarta.annotation.PostConstruct;
 
@@ -8,6 +10,8 @@ import java.util.*;
 
 @Service
 public class DataService {
+
+    private static final Logger log = LoggerFactory.getLogger(DataService.class);
 
     private final List<Person> people = new ArrayList<>();
     private final Map<Long, Person> peopleById = new HashMap<>();
@@ -158,7 +162,7 @@ public class DataService {
             nextId++;
         }
 
-        System.out.println("✓ Generated " + PEOPLE_COUNT + " unique people records with diverse international names");
+        log.info("✓ Generated {} unique people records with diverse international names", PEOPLE_COUNT);
     }
 
     public List<Person> getAllPeople() {

@@ -1,5 +1,7 @@
 package com.challenge.badapi.service;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -12,6 +14,8 @@ import java.util.concurrent.ConcurrentHashMap;
 
 @Service
 public class BadBehaviorService {
+
+    private static final Logger log = LoggerFactory.getLogger(BadBehaviorService.class);
 
     @Value("${badapi.random-error.failure-rate:0.3}")
     private double failureRate;
@@ -100,7 +104,7 @@ public class BadBehaviorService {
 
         if (random.nextDouble() < slownessProbability) {
             int delaySeconds = minDelaySeconds + random.nextInt(maxDelaySeconds - minDelaySeconds + 1);
-            System.out.println("🐌 Simulating slow response: " + delaySeconds + "s delay");
+            log.info("🐌 Simulating slow response: {}s delay", delaySeconds);
             
             try {
                 Thread.sleep(delaySeconds * 1000L);
@@ -116,7 +120,7 @@ public class BadBehaviorService {
      */
     public void maybeTimeout() {
         if (random.nextDouble() < timeoutProbability) {
-            System.out.println("⏱️  Simulating timeout: No response will be sent");
+            log.info("⏱️  Simulating timeout: No response will be sent");
             
             try {
                 // Sleep for a very long time to simulate timeout
@@ -143,7 +147,7 @@ public class BadBehaviorService {
         if (variableRateLimit) {
             currentLimit = clientRateLimits.computeIfAbsent(clientIdentifier, k -> {
                 int limit = minRateLimit + random.nextInt(maxRateLimit - minRateLimit + 1);
-                System.out.println("🎲 Assigned rate limit of " + limit + " req/min to client: " + clientIdentifier);
+                log.info("🎲 Assigned rate limit of {} req/min to client: {}", limit, clientIdentifier);
                 return limit;
             });
             
@@ -151,7 +155,7 @@ public class BadBehaviorService {
             if (random.nextDouble() < 0.1) { // 10% chance to change
                 currentLimit = minRateLimit + random.nextInt(maxRateLimit - minRateLimit + 1);
                 clientRateLimits.put(clientIdentifier, currentLimit);
-                System.out.println("🔄 Changed rate limit to " + currentLimit + " req/min for client: " + clientIdentifier);
+                log.info("🔄 Changed rate limit to {} req/min for client: {}", currentLimit, clientIdentifier);
             }
         }
         
